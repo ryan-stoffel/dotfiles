@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
   programs.zsh = {
     enable = true;
@@ -10,7 +10,7 @@
       ls = "eza --icons";
       ll = "eza -la --icons";
       cat = "bat";
-      rebuild = "sudo darwin-rebuild switch --flake ~/.dotfiles/nix-darwin#macbook";
+      rebuild = "just --justfile ~/.dotfiles/Justfile rebuild";
       lg = "lazygit";
       cd = "z";
       dots = "cd ~/.dotfiles";
@@ -23,26 +23,10 @@
       zdev = "zellij -s dev -n dev";
       h = "herdr";
       hp = "$HOME/.local/bin/herdr-project";
+      p = "$HOME/.local/bin/project";
 
-      # Personal project aliases
-      ai-usage = "$HOME/.local/bin/herdr-project personal/Ai-Usage";
-      atoll = "$HOME/.local/bin/herdr-project personal/Atoll";
-      better-instagram = "$HOME/.local/bin/herdr-project personal/better-instagram";
-      caffeine = "$HOME/.local/bin/herdr-project personal/caffeine";
-      files-stoffel = "$HOME/.local/bin/herdr-project personal/files.stoffel.org";
-      forge = "$HOME/.local/bin/herdr-project personal/forge";
-      homebrew-tap = "$HOME/.local/bin/herdr-project personal/homebrew-tap";
-      job-tracker = "$HOME/.local/bin/herdr-project personal/job-application-tracker";
-      leaderboard = "$HOME/.local/bin/herdr-project personal/leaderboard-service";
-      portfolio = "$HOME/.local/bin/herdr-project personal/rstoffel-portfolio";
-
-      # Work project aliases
-      wiss = "$HOME/.local/bin/herdr-project work/WISSv5-Zeroclaw-VM";
-      wiss-wiki = "$HOME/.local/bin/herdr-project work/WISSv5-Zeroclaw-VM.wiki";
-      controller = "$HOME/.local/bin/herdr-project work/controller_2.2";
-      wiss-installer = "$HOME/.local/bin/herdr-project work/wiss-agent-installer";
-      wiss-packages = "$HOME/.local/bin/herdr-project work/wiss-packages";
-    };
+    } // lib.mapAttrs (_: target: "project open " + lib.escapeShellArg target)
+      (builtins.fromTOML (builtins.readFile ../../../projects/config.toml)).aliases;
   };
 
   programs.starship = {
@@ -67,5 +51,11 @@
     enable = true;
     enableZshIntegration = true;
     defaultCommand = "fd --type f";
+  };
+
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
   };
 }

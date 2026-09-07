@@ -15,6 +15,20 @@
       username = "ryanstoffel";
     in
     {
+      devShells.${system} =
+        let
+          pkgs = import nixpkgs { inherit system; };
+          shell = packages: pkgs.mkShellNoCC { packages = [ pkgs.just ] ++ packages; };
+        in
+        {
+          node = shell [ pkgs.nodejs_22 ];
+          python = shell [ pkgs.python312 pkgs.uv pkgs.ruff ];
+          rust = shell [ pkgs.cargo pkgs.rustc pkgs.rustfmt pkgs.clippy pkgs.pkg-config ];
+          java = shell [ pkgs.jdk21 pkgs.maven ];
+          # Apple SDKs and Swift remain owned by the selected Xcode installation.
+          swift = shell [ ];
+        };
+
       darwinConfigurations."macbook" = nix-darwin.lib.darwinSystem {
         inherit system;
         modules = [

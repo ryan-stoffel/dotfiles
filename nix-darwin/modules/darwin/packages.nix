@@ -58,9 +58,15 @@ in
     # dotfiles workflow
     just
     nixpkgs-fmt
+    nil
 
     # Node runtime with npm and npx (OMP adapters and Postplan CLI)
     nodejs_22
+
+    # Previously installed in an unmanaged personal Nix profile.
+    jdk21
+    maven
+    postgresql_16
 
     # secrets management
     sops

@@ -2,12 +2,15 @@
 {
   homebrew = {
     enable = true;
-    onActivation.autoUpdate = true;
-    onActivation.upgrade = true;
-    onActivation.cleanup = "zap";
+    onActivation.autoUpdate = false;
+    onActivation.upgrade = false;
+    onActivation.cleanup = "uninstall";
 
     taps = [
-      "FelixKratz/formulae"
+      {
+        name = "FelixKratz/formulae";
+        trusted = true;
+      }
       {
         name = "can1357/tap";
         trusted = true;
@@ -24,11 +27,11 @@
 
       # terminal
       "cmux"
-      "font-jetbrains-mono-nerd-font"
 
       # dev
       "tailscale-app"
       "visual-studio-code"
+      "docker-desktop"
       "claude"
       "claude-code"
       "github"
@@ -51,9 +54,11 @@
       # notes
       "obsidian"
       "notion"
+      "granola"
 
       # utilities
       "1password"
+      "1password-cli"
       "alt-tab"
       "atoll"
       "ryanstoffel/tap/caffeine"
@@ -66,7 +71,8 @@
 
     brews = [
       "mas"
-      "ollama"
+      { name = "ollama"; start_service = true; }
+      "xcodes"
       "glab"
       "omp"
       "tmux"
@@ -74,9 +80,11 @@
       "hermes-agent"
     ];
 
-    masApps = {
-      "Windows App" = 1295203466;
-      "Xcode" = 497799835;
-    };
+    # `mas list` can hang on the App Store service. Already installed bundles
+    # should not block unrelated rebuilds; absent apps still install via mas.
+    extraConfig = ''
+      mas "Windows App", id: 1295203466 unless File.directory?("/Applications/Windows App.app")
+      mas "Xcode", id: 497799835 unless File.directory?("/Applications/Xcode.app")
+    '';
   };
 }

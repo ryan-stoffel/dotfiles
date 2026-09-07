@@ -6,6 +6,7 @@
     ./finder.nix
     ./launchd.nix
     ./zed.nix
+    ./vscode.nix
     ./omp.nix
     ./ghostty.nix
     ./cmux.nix
@@ -15,6 +16,8 @@
     ./btop.nix
     ./bat.nix
     ./vesktop.nix
+    ./projects.nix
+    ./ssh.nix
   ];
 
   home.username = "ryanstoffel";
@@ -24,6 +27,10 @@
     "$HOME/.npm-global/bin"
     "$HOME/.local/bin"
   ];
+  home.sessionVariables = {
+    EDITOR = "nvim";
+    VISUAL = "nvim";
+  };
 
   # Single home for all code projects. No code lives outside ~/Developer.
   home.activation.createDevFolders =

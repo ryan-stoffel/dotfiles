@@ -1,0 +1,26 @@
+# Paths are relative to ~/Developer. All command values are argument arrays.
+[aliases]
+# Work aliases live in the untracked projects/config.local.toml.
+ai-usage = "personal/Ai-Usage"
+atoll = "personal/Atoll"
+better-instagram = "personal/better-instagram"
+caffeine = "personal/caffeine"
+cadence = "personal/cadence"
+files-stoffel = "personal/files.stoffel.org"
+forge = "personal/forge"
+job-tracker = "personal/job-application-tracker"
+leaderboard = "personal/leaderboard-service"
+portfolio = "personal/rstoffel-portfolio"
+tidy = "personal/tidy"
+
+[projects."school/FA26"]
+workspace = "vscode/FA26.code-workspace"
+
+[projects."school/capstone"]
+workspace = "vscode/capstone.code-workspace"
+
+[projects."personal/forge".commands]
+dev = ["env", "FORGE_DISABLE_UPDATES=1", "cargo", "run", "-p", "forge", "--release"]
+
+[projects."school/capstone/ember-bench".commands]
+dev = ["uv", "run", "emberbench", "--help"]

@@ -1,0 +1,26 @@
+# Available anywhere with `just --global <task>` after activation.
+set shell := ["zsh", "-cu"]
+set positional-arguments
+
+default:
+    @just --justfile "{{justfile()}}" --list
+
+[no-cd]
+dev project="":
+    @project run dev "$1"
+
+[no-cd]
+build project="":
+    @project run build "$1"
+
+[no-cd]
+test project="":
+    @project run test "$1"
+
+[no-cd]
+lint project="":
+    @project run lint "$1"
+
+[no-cd]
+check project="":
+    @project run check "$1"

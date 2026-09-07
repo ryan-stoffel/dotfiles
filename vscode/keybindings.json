@@ -1,0 +1,27 @@
+// Symlinked live into ~/Library/Application Support/Code/User/ via
+// nix-darwin/modules/home/vscode.nix. Edits apply without a rebuild.
+[
+    // Remove the extension's default binding so it doesn't conflict with the toggle below
+    { "key": "cmd+shift+v", "command": "-markdown-preview-enhanced.openPreview" },
+
+    // Cmd+Shift+V: switch a markdown file from source editing into Markdown Preview Enhanced
+    {
+        "key": "cmd+shift+v",
+        "command": "reopenActiveEditorWith",
+        "args": "markdown-preview-enhanced",
+        "when": "editorLangId == markdown && activeCustomEditorId != 'markdown-preview-enhanced'"
+    },
+    // Cmd+Shift+V: switch back to the plain text editor when the preview is active
+    {
+        "key": "cmd+shift+v",
+        "command": "reopenActiveEditorWith",
+        "args": "default",
+        "when": "activeCustomEditorId == 'markdown-preview-enhanced'"
+    },
+
+    // Put Claude back in the left rail if it ever ends up somewhere else
+    { "key": "cmd+alt+c", "command": "claude-vscode.sidebar.open" },
+
+    // Keep the left rail from being toggled away by the secondary-side-bar chord
+    { "key": "cmd+alt+b", "command": "workbench.action.toggleAuxiliaryBar" }
+]

@@ -1,0 +1,106 @@
+{
+  // Symlinked live into ~/Library/Application Support/Code/User/ via
+  // nix-darwin/modules/home/vscode.nix. Edits apply without a rebuild.
+
+  // Claude Code owns the left rail.
+  // The extension's view lives in the secondary side bar, and moving the
+  // primary side bar to the right puts the secondary one on the left.
+  "claudeCode.preferredLocation": "sidebar",
+  "workbench.sideBar.location": "right",
+  "workbench.secondarySideBar.defaultVisibility": "visible",
+  "workbench.secondarySideBar.showLabels": false,
+  "claudeCode.autosave": true,
+  "claudeCode.hideOnboarding": true,
+  "claudeCode.enableNewConversationShortcut": true,
+  "claudeCode.enableReopenClosedSessionShortcut": true,
+  "claudeCode.allowDangerouslySkipPermissions": true,
+  "claudeCode.initialPermissionMode": "bypassPermissions",
+
+  // Copilot is bundled with VS Code and also claims the secondary side bar.
+  // Turning its surface off leaves Claude Code as the only chat in the window.
+  "chat.disableAIFeatures": true,
+
+  "workbench.colorTheme": "GitHub Dark Default",
+  "workbench.iconTheme": "material-icon-theme",
+  "material-icon-theme.files.color": "#90a4ae",
+  "material-icon-theme.folders.color": "#42a5f5",
+  "workbench.startupEditor": "none",
+  "workbench.editor.enablePreview": false,
+  "workbench.tree.indent": 14,
+  "window.title": "${rootName}${separator}${activeEditorMedium}",
+
+  "editor.fontFamily": "JetBrainsMono Nerd Font, Menlo, monospace",
+  "editor.fontSize": 14,
+  "editor.fontLigatures": true,
+  "editor.lineHeight": 1.6,
+  "editor.minimap.enabled": false,
+  "editor.stickyScroll.enabled": true,
+  "editor.renderWhitespace": "boundary",
+  "editor.rulers": [100],
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.linkedEditing": true,
+  "editor.suggestSelection": "first",
+  "editor.inlineSuggest.enabled": false,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
+  },
+
+  "files.autoSave": "onFocusChange",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb, .npmrc, tsconfig*.json",
+    "*.ts": "${capture}.js, ${capture}.d.ts, ${capture}.test.ts, ${capture}.spec.ts",
+    "*.tsx": "${capture}.css, ${capture}.module.css, ${capture}.test.tsx",
+    "flake.nix": "flake.lock",
+    "Cargo.toml": "Cargo.lock"
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.next": true,
+    "**/result": true,
+    "**/*.lock": true
+  },
+
+  "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font",
+  "terminal.integrated.fontSize": 13,
+  "terminal.integrated.cursorStyle": "block",
+  "terminal.integrated.cursorBlinking": false,
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.scrollback": 20000,
+
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+  "git.openRepositoryInParentFolders": "always",
+  "diffEditor.ignoreTrimWhitespace": false,
+  "diffEditor.renderSideBySide": true,
+  "scm.diffDecorationsGutterWidth": 4,
+
+  "markdown-preview-enhanced.automaticallyShowPreviewOfMarkdownBeingEdited": false,
+  "markdown.extension.preview.autoShowPreviewToSide": false,
+  "workbench.editorAssociations": {
+    "*.copilotmd": "vscode.markdown.preview.editor"
+  },
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": { "comments": "off", "strings": "off", "other": "off" }
+  },
+  "[nix]": { "editor.tabSize": 2 },
+  "[json]": { "editor.tabSize": 2 },
+  "[jsonc]": {
+    "editor.tabSize": 2
+  },
+  "extensions.autoUpdate": "off",
+  "extensions.autoCheckUpdates": true,
+  "settingsSync.keybindingsPerPlatform": false
+}

@@ -1,0 +1,32 @@
+{
+  "folders": [
+    { "name": "ember", "path": "/Users/ryanstoffel/Developer/school/capstone/ember" },
+    { "name": "ember-bench", "path": "/Users/ryanstoffel/Developer/school/capstone/ember-bench" },
+    { "name": "ember-sync-poc", "path": "/Users/ryanstoffel/Developer/school/capstone/ember-sync-poc" }
+  ],
+  "settings": {
+    "window.title": "capstone — ${activeEditorMedium}",
+    "python.defaultInterpreterPath": "/Users/ryanstoffel/Developer/school/capstone/ember-bench/.venv/bin/python",
+    "search.exclude": {
+      "**/.venv": true,
+      "**/__pycache__": true,
+      "**/.pytest_cache": true,
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/results": true
+    },
+    "files.watcherExclude": {
+      "**/.venv/**": true,
+      "**/node_modules/**": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "anthropic.claude-code",
+      "ms-python.python",
+      "charliermarsh.ruff",
+      "esbenp.prettier-vscode",
+      "ms-azuretools.vscode-docker"
+    ]
+  }
+}

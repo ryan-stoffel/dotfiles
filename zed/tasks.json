@@ -1,23 +1,23 @@
 [
   {
-    "label": "Pi Agent: Interactive",
-    "command": "pi",
+    "label": "OMP Agent: Interactive",
+    "command": "omp",
     "args": [],
     "use_new_terminal": true,
     "allow_concurrent_runs": true,
     "reveal": "always"
   },
   {
-    "label": "Pi Agent: Work on Current File",
-    "command": "pi",
+    "label": "OMP Agent: Work on Current File",
+    "command": "omp",
     "args": ["@$ZED_FILE"],
     "use_new_terminal": true,
     "allow_concurrent_runs": true,
     "reveal": "always"
   },
   {
-    "label": "Pi Agent: Continue Session",
-    "command": "pi",
+    "label": "OMP Agent: Continue Session",
+    "command": "omp",
     "args": ["--continue"],
     "use_new_terminal": true,
     "allow_concurrent_runs": true,

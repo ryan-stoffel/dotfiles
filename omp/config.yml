@@ -1,45 +1,45 @@
-skills: 
-  customDirectories: 
+skills:
+  customDirectories:
     - ~/.dotfiles/omp/skills
-startup: 
+startup:
   quiet: true
   showSplash: true
-defaultThinkingLevel: auto
+defaultThinkingLevel: max
 symbolPreset: nerd
-statusLine: 
+statusLine:
   preset: custom
   separator: slash
   sessionAccent: true
   transparent: true
-  leftSegments: 
+  leftSegments:
     - model
     - path
     - git
-  rightSegments: 
+  rightSegments:
     - usage
     - context_pct
-  segmentOptions: 
-    model: 
+  segmentOptions:
+    model:
       showThinkingLevel: false
-    path: 
+    path:
       abbreviate: true
       maxLength: 40
       stripWorkPrefix: true
-    git: 
+    git:
       showBranch: true
       showStaged: true
       showUnstaged: true
       showUntracked: false
   compactThinkingLevel: true
   showHookStatus: true
-modelProviderOrder: 
+modelProviderOrder:
   - anthropic
   - openai-codex
   - google-antigravity
-tools: 
+tools:
   approvalMode: yolo
-providers: 
-  webSearchOrder: 
+providers:
+  webSearchOrder:
     - anthropic
     - perplexity
     - gemini
@@ -64,9 +64,9 @@ providers:
     - mojeek
     - public
 setupVersion: 1
-modelRoles: 
-  default: anthropic/claude-sonnet-5
-enabledModels: 
+modelRoles:
+  default: openai-codex/gpt-5.6-sol
+enabledModels:
   - anthropic/claude-sonnet-5
   - anthropic/claude-opus-4-8
   - anthropic/claude-opus-5
@@ -74,51 +74,51 @@ enabledModels:
   - openai-codex/gpt-5.6-sol
   - openai-codex/gpt-5.6-luna
   - openai-codex/gpt-5.6-terra
-dev: 
+dev:
   autoqaConsent: granted
-terminal: 
+terminal:
   showProgress: false
-tui: 
+tui:
   textSizing: false
   renderMermaid: true
   codexResetFireworks: true
   hyperlinks: auto
   tight: false
-display: 
+display:
   shimmer: kitt
   hideToolActivity: false
   showTokenUsage: false
 steeringMode: one-at-a-time
-error: 
+error:
   notify: "on"
-stt: 
+stt:
   enabled: false
 autoResume: true
-power: 
+power:
   sleepPrevention: idle
-contextPromotion: 
+contextPromotion:
   enabled: false
-branchSummary: 
+branchSummary:
   enabled: true
-memory: 
+memory:
   backend: local
-autolearn: 
+autolearn:
   enabled: true
-edit: 
+edit:
   mode: hashline
 readLineNumbers: true
-read: 
+read:
   renderMarkdown: true
-lsp: 
+lsp:
   formatOnWrite: true
-bash: 
-  autoBackground: 
+bash:
+  autoBackground:
     enabled: true
-checkpoint: 
+checkpoint:
   enabled: true
-github: 
+github:
   enabled: true
-task: 
+task:
   eager: default
-codexResets: 
+codexResets:
   autoRedeem: "yes"

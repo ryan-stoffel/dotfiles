@@ -1,0 +1,2 @@
+# Synthetic authorization-header fixture in a removed, vendored test. Exact finding only.
+d567e9c9897531962ad52aa370aa949ee3a2445f:pi/extensions/summaries/transcript.test.ts:curl-auth-header:76

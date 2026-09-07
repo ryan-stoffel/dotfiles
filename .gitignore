@@ -21,3 +21,11 @@ result-*
 
 # macOS cruft
 .DS_Store
+
+# Local development caches
+__pycache__/
+.direnv/
+
+# Machine-local overrides — internal hosts and project paths stay untracked
+ssh/config.local
+projects/config.local.toml

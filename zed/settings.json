@@ -2,24 +2,6 @@
   "vim_mode": true,
   "relative_line_numbers": true,
 
-  // Native pi agent via the pi-acp ACP adapter.
-  // New Thread in the agent panel -> pick "pi" -> spawns `pi --mode rpc` behind pi-acp.
-  "agent": {
-    "dock": "left",
-    "default_width": 440,
-    "enabled": true
-  },
-  "agent_servers": {
-    "pi": {
-      "type": "custom",
-      "command": "npx",
-      "args": ["-y", "pi-acp"],
-      "env": {
-        "PI_ACP_ENABLE_EMBEDDED_CONTEXT": "true"
-      }
-    }
-  },
-
   // Layout: agent (left) | editor (center) | file explorer (right), terminal on the bottom.
   "project_panel": {
     "dock": "right",

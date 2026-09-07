@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Provision a fresh Mac from this repo.
-# Assumes: macOS, a working internet connection, and your ~/.ssh/id_ed25519
-# key present (needed for sops-nix to decrypt secrets).
+# Assumes macOS and internet access. Authentication is completed in the apps.
 set -euo pipefail
 
 REPO="$HOME/.dotfiles"
@@ -17,19 +16,19 @@ if ! xcode-select -p >/dev/null 2>&1; then
   echo "Finish the CLT install, then re-run this script." && exit 1
 fi
 
-# 2. Nix (Determinate installer, with flakes enabled by default)
+# 2. Upstream Nix; nix-darwin owns its daemon and configuration.
 if ! command -v nix >/dev/null 2>&1; then
-  log "Installing Nix (Determinate)..."
+  log "Installing Nix..."
   curl --proto '=https' --tlsv1.2 -sSf -L \
-    https://install.determinate.systems/nix | sh -s -- install --no-confirm
+    https://nixos.org/nix/install | sh -s -- --daemon
   # shellcheck disable=SC1091
   . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 fi
 
-# 3. SSH key check (sops-nix decrypts with ~/.ssh/id_ed25519)
-if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
-  log "WARNING: ~/.ssh/id_ed25519 not found — sops secrets will not decrypt."
-  echo "Copy your existing SSH key over (or restore it) before rebuilding."
+# 3. nix-darwin manages Homebrew packages, but does not install Homebrew.
+if [ ! -x /opt/homebrew/bin/brew ]; then
+  log "Installing Homebrew..."
+  /bin/bash -c "$(curl --proto '=https' --tlsv1.2 -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
 # 4. Clone the repo if it isn't here yet
@@ -38,8 +37,9 @@ if [ ! -d "$REPO/.git" ]; then
   git clone https://github.com/RyanStoffel/dotfiles.git "$REPO"
 fi
 
-# 5. First build+switch via nix-darwin's flake app (darwin-rebuild not yet on PATH)
+# 5. Build as the owner using the lockfile, then activate the resulting system.
 log "Running first darwin-rebuild switch..."
-sudo nix run nix-darwin -- switch --flake "$FLAKE#$HOST"
+"$REPO/scripts/rebuild.sh"
 
 log "Done. From now on use: just rebuild"
+log "Complete the app and security steps documented in README.md, then run just doctor."

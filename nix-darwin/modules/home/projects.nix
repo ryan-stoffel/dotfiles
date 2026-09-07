@@ -6,6 +6,7 @@ in
 {
   home.file.".local/bin/project".source = link "scripts/project.py";
   home.file.".local/bin/dotfiles-doctor".source = link "scripts/doctor.py";
+  home.file.".local/bin/dotfiles-health".source = link "scripts/tui.py";
   home.file.".config/raycast/scripts".source = link "raycast";
   home.file.".config/just/justfile".source = link "projects/Justfile";
 

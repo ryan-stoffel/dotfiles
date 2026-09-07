@@ -7,6 +7,7 @@ Editable configurations are linked live from this repository.
 ## Everyday commands
 
 ```sh
+just tui                      # live health dashboard (read-only)
 just doctor                   # read-only workstation checks
 just check                    # focused workflow tests and whitespace checks
 just build                    # build without activation
@@ -150,7 +151,7 @@ administrator authentication and application permissions.
 ## Layout
 
 - `nix-darwin/`: system and Home Manager modules, pinned inputs, dev shells.
-- `scripts/`: bootstrap, shared project launcher, doctor, extension synchronizer.
+- `scripts/`: bootstrap, shared project launcher, health checks, dashboard, extension synchronizer.
 - `projects/`: launcher registry and global Justfile.
 - `raycast/`: launcher and diagnostic Script Commands.
 - `ssh/`: connection settings, with no private keys.

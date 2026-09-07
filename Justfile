@@ -33,6 +33,10 @@ gc:
 doctor:
     @python3 "{{justfile_directory()}}/scripts/doctor.py"
 
+# Live health dashboard: staleness, git state, services, and drift
+tui:
+    @python3 "{{justfile_directory()}}/scripts/tui.py"
+
 # Run syntax checks and focused workflow tests without switching the system
 check:
     python3 -B -m unittest discover -s "{{justfile_directory()}}/tests" -v

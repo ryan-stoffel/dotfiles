@@ -1,4 +1,7 @@
 { pkgs, ... }:
+let
+  bluebubbles-server = pkgs.callPackage ../../packages/bluebubbles-server.nix { };
+in
 {
   environment.systemPath = [
     "/opt/homebrew/bin"
@@ -68,5 +71,8 @@
     # editors
     vim
     neovim
+
+    # macOS apps not available through Homebrew
+    bluebubbles-server
   ];
 }

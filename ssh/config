@@ -1,0 +1,17 @@
+# Machine-local hosts are read first (OpenSSH uses the first value it finds).
+# Internal hostnames, addresses, and accounts belong in ~/.ssh/config.local,
+# which is untracked; this repository is public.
+Include ~/.ssh/config.local
+
+# Opt in without changing existing remotes: ssh -T github-1password
+# Enable the SSH agent in 1Password > Settings > Developer first.
+Host github-1password
+    HostName github.com
+    User git
+    IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+    IdentityFile none
+
+Host github.com
+    AddKeysToAgent yes
+    UseKeychain yes
+    IdentityFile ~/.ssh/id_ed25519

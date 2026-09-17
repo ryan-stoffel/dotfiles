@@ -117,9 +117,20 @@ def services():
                 "" if running else "open -a Docker")
 
 
+def tool_path(name):
+    path = shutil.which(name)
+    if path:
+        return path
+    if name == "ghostty":
+        bundled = Path("/Applications/Ghostty.app/Contents/MacOS/ghostty")
+        if bundled.is_file():
+            return str(bundled)
+    return None
+
+
 def tools():
     for tool in ("nix", "direnv", "node", "uv", "op", "xcodes", "docker", "code", "ghostty", "fzf"):
-        path = shutil.which(tool)
+        path = tool_path(tool) if tool == "ghostty" else shutil.which(tool)
         yield Check("tools", tool, "ok" if path else "fail", path or "missing", "" if path else "rebuild")
     probe = command(["/bin/zsh", "-lic", "node -p 'JSON.stringify({version:process.version,path:process.execPath})'"])
     try:

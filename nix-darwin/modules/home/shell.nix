@@ -31,6 +31,7 @@ in
       dext = "python3 ${dotfiles}/scripts/vscode-extensions.py --prune";
       dscan = "gitleaks git ${dotfiles} --redact --gitleaks-ignore-path ${dotfiles}/.gitleaksignore && gitleaks dir ${dotfiles} --redact";
       dbootstrap = "${dotfiles}/scripts/bootstrap.sh";
+      duprecover = "${dotfiles}/scripts/macos-upgrade-recovery.sh";
 
     } // lib.mapAttrs (_: target: "project open " + lib.escapeShellArg target)
       (builtins.fromTOML (builtins.readFile ../../../projects/config.toml)).aliases;

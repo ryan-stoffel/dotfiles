@@ -20,6 +20,7 @@ ddoctor                       # read-only workstation checks
 dtui                          # live health dashboard (read-only)
 dcheck                        # focused workflow tests and whitespace checks
 dbootstrap                    # provision a fresh machine from this repo
+duprecover                    # after a major macOS upgrade if Nix breaks
 ```
 
 Rebuilds do not upgrade Homebrew packages. Removing a cask from the list uninstalls
@@ -118,6 +119,22 @@ In System Settings > Privacy & Security > FileVault, enable FileVault and choose
 an account/recovery-key recovery method. Keep recovery material off this Mac.
 Dotfiles Git history does not back up uncommitted projects, keys, databases, or
 application state. `ddoctor` reports unfinished setup steps.
+
+## macOS major upgrade (e.g. 27 Golden Gate)
+
+Before upgrading on the current macOS release: push this repo, run `rebuild` and
+`ddoctor`, then optionally `dup` and `rebuild` so the lockfile is fresh.
+
+After upgrading, if `nix` is missing or `rebuild` fails:
+
+```sh
+~/.dotfiles/scripts/macos-upgrade-recovery.sh
+```
+
+The script checks Background Task Management (enable Nix **sh** items under
+**Login Items & Extensions → Allow in the Background** if prompted), remounts
+`/nix`, bootstraps Nix daemons, runs `dup`, `rebuild`, and `ddoctor`. Then run
+`dbrew`, reopen Docker Desktop, and confirm with `docker info`.
 
 ## Fresh machine
 

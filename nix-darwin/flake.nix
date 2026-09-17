@@ -36,6 +36,7 @@
           ./modules/darwin/homebrew.nix
           ./modules/darwin/system-defaults.nix
           ./modules/darwin/security.nix
+          ./modules/darwin/limits.nix
           ./modules/darwin/fonts.nix
           home-manager.darwinModules.home-manager
           {

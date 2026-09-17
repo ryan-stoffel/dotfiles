@@ -4,10 +4,8 @@
     ./shell.nix
     ./git.nix
     ./finder.nix
-    ./zed.nix
     ./vscode.nix
     ./ghostty.nix
-    ./zellij.nix
     ./btop.nix
     ./bat.nix
     ./vesktop.nix

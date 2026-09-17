@@ -18,8 +18,6 @@ in
       cd = "z";
       dots = "cd ~/.dotfiles";
       sshvm = "TERM=xterm-256color ssh vm";
-      zj = "zellij";
-      zdev = "zellij -s dev -n dev";
       p = "$HOME/.local/bin/project";
 
       rebuild = "${dotfiles}/scripts/rebuild.sh";

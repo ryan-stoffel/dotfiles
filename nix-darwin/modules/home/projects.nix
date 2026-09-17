@@ -24,7 +24,11 @@ in
       "$HOME/.omp/agent/config.yml" \
       "$HOME/.omp/agent/skills" \
       "$HOME/.omp/agent/AGENTS.md" \
-      "$HOME/.config/zed/tasks.json"; do
+      "$HOME/.config/zed/settings.json" \
+      "$HOME/.config/zed/keymap.json" \
+      "$HOME/.config/zed/tasks.json" \
+      "$HOME/.config/zellij/config.kdl" \
+      "$HOME/.config/zellij/layouts/dev.kdl"; do
       if [ -L "$path" ] || [ -e "$path" ]; then
         run rm -rf "$path"
       fi

@@ -54,8 +54,6 @@ def system():
     required = [
         *DOTS.glob("nix-darwin/**/*.nix"),
         *DOTS.glob("vscode/*"),
-        *DOTS.glob("zed/*"),
-        *DOTS.glob("zellij/**/*"),
         DOTS / "ghostty/config",
         *DOTS.glob("raycast/*"),
         *DOTS.glob("scripts/*.py"),

@@ -42,9 +42,6 @@
     # docs
     tealdeer
 
-    # terminal multiplexer
-    zellij
-
     # misc
     tokei
     sd
@@ -65,9 +62,6 @@
     postgresql_16
 
     # secrets management
-    sops
-    age
-    ssh-to-age
     gitleaks
 
     # editors

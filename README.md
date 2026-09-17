@@ -112,9 +112,7 @@ without selecting an actual signing key. A 1Password agent socket alone is not
 proof that the correct key is present.
 
 Secrets can be supplied at runtime with `op run`, e.g. using an environment file
-containing `op://` references. Do not commit plaintext credentials. `sops`, `age`,
-and `.sops.yaml` remain available for manual encryption, but this configuration
-does not use sops-nix or decrypt secrets at activation.
+containing `op://` references. Do not commit plaintext credentials.
 
 In System Settings > Privacy & Security > FileVault, enable FileVault and choose
 an account/recovery-key recovery method. Keep recovery material off this Mac.
@@ -145,8 +143,7 @@ authentication and application permissions.
 - `projects/`: launcher registry.
 - `raycast/`: launcher and diagnostic Script Commands.
 - `ssh/`: connection settings, with no private keys.
-- `vscode/`, `zed/`, `ghostty/`: editable app settings.
-- `zellij/`: terminal multiplexer layouts.
+- `vscode/`, `ghostty/`: editable app settings.
 - `docs/git-workflow.md`: worktree organization and GitButler tradeoffs.
 
 The terminal background remains true black. Application settings can write into

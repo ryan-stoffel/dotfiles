@@ -1,13 +1,9 @@
 # Ghostty config: https://ghostty.org/docs/config/reference
 # Symlinked live into ~/.config/ghostty/config via nix-darwin/modules/home/ghostty.nix
-# Read by libghostty inside cmux, so this file is the single source of truth for
-# the terminal palette. Every terminal tool below inherits it through ANSI.
+# Primary terminal palette for Ghostty and any tool that reads this file.
 #
 # Colors are Ghostty's stock palette. The only deviation is the background,
 # which is true black instead of Ghostty's #282c34.
-#
-# No `theme =` line: any theme directive suppresses cmux's own managed palette,
-# so both apps stay on their defaults.
 
 background = #000000
 

@@ -1,4 +1,8 @@
 { pkgs, lib, ... }:
+let
+  dotfiles = "$HOME/.dotfiles";
+  flake = "${dotfiles}/nix-darwin#macbook";
+in
 {
   programs.zsh = {
     enable = true;
@@ -10,20 +14,25 @@
       ls = "eza --icons";
       ll = "eza -la --icons";
       cat = "bat";
-      rebuild = "just --justfile ~/.dotfiles/Justfile rebuild";
       lg = "lazygit";
       cd = "z";
       dots = "cd ~/.dotfiles";
       sshvm = "TERM=xterm-256color ssh vm";
-      ai = "omp";
-      tdev = "$HOME/.local/bin/tmux-dev";
-      tp = "$HOME/.local/bin/tmux-project";
-      t = "$HOME/.local/bin/tmux-project";
       zj = "zellij";
       zdev = "zellij -s dev -n dev";
-      h = "herdr";
-      hp = "$HOME/.local/bin/herdr-project";
       p = "$HOME/.local/bin/project";
+
+      rebuild = "${dotfiles}/scripts/rebuild.sh";
+      dbuild = "darwin-rebuild build --flake ${flake}";
+      dup = "nix flake update --flake ${dotfiles}/nix-darwin";
+      dgc = "sudo nix-collect-garbage --delete-older-than 14d && nix-collect-garbage --delete-older-than 14d";
+      ddoctor = "python3 ${dotfiles}/scripts/doctor.py";
+      dtui = "python3 ${dotfiles}/scripts/tui.py";
+      dcheck = "python3 -B -m unittest discover -s ${dotfiles}/tests -v && git -C ${dotfiles} diff --check";
+      dbrew = "brew update && brew upgrade";
+      dext = "python3 ${dotfiles}/scripts/vscode-extensions.py --prune";
+      dscan = "gitleaks git ${dotfiles} --redact --gitleaks-ignore-path ${dotfiles}/.gitleaksignore && gitleaks dir ${dotfiles} --redact";
+      dbootstrap = "${dotfiles}/scripts/bootstrap.sh";
 
     } // lib.mapAttrs (_: target: "project open " + lib.escapeShellArg target)
       (builtins.fromTOML (builtins.readFile ../../../projects/config.toml)).aliases;
@@ -33,10 +42,7 @@
     enable = true;
     settings = {
       add_newline = false;
-      # Layout and glyphs only. Module colors are starship's defaults.
       format = "$directory$git_branch$git_status$cmd_duration$character";
-      # Stock caret is a heavy angle quote; ">" is a plain ASCII caret. Green
-      # and red are starship's own success/error colors.
       character.success_symbol = "[>](bold green)";
       character.error_symbol = "[>](bold red)";
     };

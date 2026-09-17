@@ -41,5 +41,5 @@ fi
 log "Running first darwin-rebuild switch..."
 "$REPO/scripts/rebuild.sh"
 
-log "Done. From now on use: just rebuild"
-log "Complete the app and security steps documented in README.md, then run just doctor."
+log "Done. From now on use: rebuild"
+log "Complete the app and security steps documented in README.md, then run ddoctor."

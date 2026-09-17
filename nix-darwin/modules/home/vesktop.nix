@@ -26,7 +26,7 @@ in
         -e 'if (!img.js) throw new Error("icon failed to load")' \
         -e '$.NSWorkspace.sharedWorkspace.setIconForFileOptions(img, "${app}", 0)' \
         > /dev/null
-      run /usr/bin/touch "${app}"
+      run /usr/bin/touch "${app}" || true
     fi
   '';
 }

@@ -64,7 +64,7 @@ def system():
                      "--raw", flake], 180)
     if built.returncode:
         tail = built.stderr.strip().splitlines()
-        yield Check("system", "Flake evaluation", "fail", tail[-1] if tail else "failed", "just build")
+        yield Check("system", "Flake evaluation", "fail", tail[-1] if tail else "failed", "dbuild")
         return
     yield Check("system", "Flake evaluates offline", "ok")
     current = Path("/run/current-system").resolve()
@@ -72,7 +72,7 @@ def system():
     if current == target:
         yield Check("system", "System matches the flake", "ok", short(target))
     else:
-        yield Check("system", "Rebuild pending", "warn", f"{short(current)} -> {short(target)}", "just rebuild")
+        yield Check("system", "Rebuild pending", "warn", f"{short(current)} -> {short(target)}", "rebuild")
 
 
 def git():
@@ -102,21 +102,6 @@ def git():
 
 
 def services():
-    agents = {}
-    for row in command(["launchctl", "list"]).stdout.splitlines():
-        fields = row.split("\t")
-        if len(fields) == 3:
-            agents[fields[2]] = (fields[0], fields[1])
-    for label, name in (("ai.hermes.gateway", "hermes gateway"), ("homebrew.mxcl.ollama", "ollama")):
-        if label not in agents:
-            yield Check("services", name, "warn", "not loaded", f"launchctl load {label}")
-            continue
-        pid, status = agents[label]
-        if pid == "-":
-            yield Check("services", name, "warn", f"loaded, not running (last exit {status})", "")
-        else:
-            yield Check("services", name, "ok", f"pid {pid}")
-
     docker = command(["docker", "info", "--format", "{{.ServerVersion}}"], 15)
     running = docker.returncode == 0 and docker.stdout.strip()
     yield Check("services", "docker", "ok" if running else "warn",
@@ -125,28 +110,27 @@ def services():
 
 
 def tools():
-    for tool in ("nix", "just", "direnv", "node", "uv", "op", "xcodes", "docker", "code", "cmux", "fzf"):
+    for tool in ("nix", "direnv", "node", "uv", "op", "xcodes", "docker", "code", "ghostty", "fzf"):
         path = shutil.which(tool)
-        yield Check("tools", tool, "ok" if path else "fail", path or "missing", "" if path else "just rebuild")
+        yield Check("tools", tool, "ok" if path else "fail", path or "missing", "" if path else "rebuild")
     probe = command(["/bin/zsh", "-lic", "node -p 'JSON.stringify({version:process.version,path:process.execPath})'"])
     try:
         node = json.loads(probe.stdout.strip().splitlines()[-1])
         managed = node["version"].startswith("v22.") and node["path"].startswith("/nix/store/")
         yield Check("tools", "Interactive Node", "ok" if managed else "fail",
-                    f"{node['version']} at {node['path']}", "" if managed else "just rebuild")
+                    f"{node['version']} at {node['path']}", "" if managed else "rebuild")
     except (ValueError, IndexError, KeyError):
-        yield Check("tools", "Interactive Node", "fail", "could not identify", "just rebuild")
+        yield Check("tools", "Interactive Node", "fail", "could not identify", "rebuild")
 
 
 def links():
-    managed = {".config/ghostty/config": "ghostty/config", ".config/cmux/cmux.json": "cmux/cmux.json",
-               ".tmux.conf": "tmux/tmux.conf", ".local/bin/project": "scripts/project.py",
+    managed = {".config/ghostty/config": "ghostty/config", ".local/bin/project": "scripts/project.py",
                ".ssh/config": "ssh/config", ".config/raycast/scripts": "raycast",
                "Library/Application Support/Code/User/settings.json": "vscode/settings.json"}
     for dest, source in managed.items():
         path = HOME / dest
         ok = path.is_symlink() and path.exists() and path.resolve() == (DOTS / source).resolve()
-        yield Check("links", f"~/{dest}", "ok" if ok else "fail", "", "" if ok else "just rebuild")
+        yield Check("links", f"~/{dest}", "ok" if ok else "fail", "", "" if ok else "rebuild")
 
 
 def ssh():
@@ -171,7 +155,7 @@ def editor():
         yield Check("editor", "VS Code extensions", "ok", f"{len(expected)} pinned")
     else:
         drift = len(expected ^ actual)
-        yield Check("editor", "VS Code extensions", "warn", f"{drift} differ from the manifest", "just extensions")
+        yield Check("editor", "VS Code extensions", "warn", f"{drift} differ from the manifest", "dext")
 
 
 def security():

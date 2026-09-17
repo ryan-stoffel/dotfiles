@@ -3,7 +3,7 @@
 set -euo pipefail
 repo="$(cd "$(dirname "$0")/.." && pwd)"
 if [ "$(id -u)" -eq 0 ]; then
-  echo "Run just rebuild as your normal user; only activation needs sudo." >&2
+  echo "Run rebuild as your normal user; only activation needs sudo." >&2
   exit 1
 fi
 system=$(nix --extra-experimental-features 'nix-command flakes' build \

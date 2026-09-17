@@ -18,7 +18,7 @@
       devShells.${system} =
         let
           pkgs = import nixpkgs { inherit system; };
-          shell = packages: pkgs.mkShellNoCC { packages = [ pkgs.just ] ++ packages; };
+          shell = packages: pkgs.mkShellNoCC { inherit packages; };
         in
         {
           node = shell [ pkgs.nodejs_22 ];
@@ -34,6 +34,7 @@
         modules = [
           ./modules/darwin/packages.nix
           ./modules/darwin/homebrew.nix
+          ./modules/darwin/homebrew-trust.nix
           ./modules/darwin/system-defaults.nix
           ./modules/darwin/security.nix
           ./modules/darwin/fonts.nix

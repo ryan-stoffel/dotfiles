@@ -4,17 +4,13 @@
     enable = true;
     onActivation.autoUpdate = false;
     onActivation.upgrade = false;
-    onActivation.cleanup = "uninstall";
+    # "uninstall" runs `brew cleanup`, which fails for root during activation when
+    # custom tap casks require a user-scoped trust record. Declared casks are
+    # still installed/upgraded; remove extras with `brew uninstall` or re-enable
+    # cleanup after `brew trust ryanstoffel/taps` as your login user.
+    onActivation.cleanup = "none";
 
     taps = [
-      {
-        name = "FelixKratz/formulae";
-        trusted = true;
-      }
-      {
-        name = "can1357/tap";
-        trusted = true;
-      }
       {
         name = "ryanstoffel/tap";
         trusted = true;
@@ -26,7 +22,7 @@
       "raycast"
 
       # terminal
-      "cmux"
+      "ghostty"
 
       # dev
       "tailscale-app"
@@ -37,13 +33,14 @@
       "github"
       "codex"
       "antigravity-cli"
-      "hermes-desktop"
-
-      # latex
-      "mactex-no-gui"
+      "cursor"
+      "grok-bot"
+      "chatgpt"
+      "figma"
 
       # browsers
       "zen"
+      "photon"
 
       # communication
       "zoom"
@@ -60,24 +57,18 @@
       "1password"
       "1password-cli"
       "alt-tab"
-      "atoll"
+      "mysides"
       "ryanstoffel/tap/caffeine"
       "ryanstoffel/tap/tidy"
 
       # media
       "spotify"
-      "gamehub"
     ];
 
     brews = [
       "mas"
-      { name = "ollama"; start_service = true; }
       "xcodes"
       "glab"
-      "omp"
-      "tmux"
-      "herdr"
-      "hermes-agent"
     ];
 
     # `mas list` can hang on the App Store service. Already installed bundles

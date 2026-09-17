@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Discover projects, open workspaces, and run consistent development commands."""
 import argparse
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -148,17 +147,13 @@ def environment(path, argv):
     return argv
 
 
-def session_name(name):
-    return "".join(c if c.isalnum() or c == "-" else "-" for c in name).lower() + "-" + hashlib.sha256(name.encode()).hexdigest()[:8]
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="action", required=True)
     sub.add_parser("list")
     op = sub.add_parser("open")
     op.add_argument("query", nargs="?")
-    op.add_argument("--mode", choices=["both", "editor", "terminal", "tmux", "herdr"], default="both")
+    op.add_argument("--mode", choices=["both", "editor", "terminal"], default="both")
     op.add_argument("--dry-run", action="store_true")
     run = sub.add_parser("run")
     run.add_argument("task", choices=TASKS)
@@ -207,17 +202,7 @@ def main():
         else:
             steps.append(["code", "--new-window", str(DOTS / workspace if workspace else path)])
     if args.mode in {"both", "terminal"}:
-        steps.append(["cmux", str(path)])
-    if args.mode == "herdr":
-        steps.append(["herdr", "--session", session_name(name)])
-    if args.mode == "tmux":
-        session = session_name(name)
-        steps = [["tmux", "new-session", "-A", "-s", session, "-c", str(path)]]
-        if os.environ.get("TMUX"):
-            steps = [["tmux", "new-session", "-d", "-s", session, "-c", str(path)],
-                     ["tmux", "switch-client", "-t", session]]
-            if not args.dry_run and subprocess.run(["tmux", "has-session", "-t", session], capture_output=True).returncode == 0:
-                steps.pop(0)
+        steps.append(["open", "-a", "Ghostty", str(path)])
     for argv in steps:
         print(shlex.join(argv), flush=True)
         if not args.dry_run:

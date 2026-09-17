@@ -65,7 +65,7 @@ providers:
     - public
 setupVersion: 1
 modelRoles:
-  default: openai-codex/gpt-5.6-sol
+  default: anthropic/claude-sonnet-5:max
 enabledModels:
   - anthropic/claude-sonnet-5
   - anthropic/claude-opus-4-8

@@ -1,9 +1,21 @@
 {
   "folders": [
-    { "name": "3210 web app dev", "path": "/Users/ryanstoffel/Developer/school/FA26/csci3210-web-application-dev" },
-    { "name": "4150 theory + compilers", "path": "/Users/ryanstoffel/Developer/school/FA26/csci4150-theory-of-computation-compilers" },
-    { "name": "4220 ml + deep learning", "path": "/Users/ryanstoffel/Developer/school/FA26/csci4220-machine-deep-learning" },
-    { "name": "4230 data mining", "path": "/Users/ryanstoffel/Developer/school/FA26/csci4230-data-mining" }
+    {
+      "name": "3210 web app dev",
+      "path": "/Users/ryanstoffel/Developer/school/FA26/csci3210-web-application-dev",
+    },
+    {
+      "name": "4150 theory + compilers",
+      "path": "/Users/ryanstoffel/Developer/school/FA26/csci4150-theory-of-computation-compilers",
+    },
+    {
+      "name": "4220 ml + deep learning",
+      "path": "/Users/ryanstoffel/Developer/school/FA26/csci4220-machine-deep-learning",
+    },
+    {
+      "name": "4230 data mining",
+      "path": "/Users/ryanstoffel/Developer/school/FA26/csci4230-data-mining",
+    },
   ],
   "settings": {
     "window.title": "FA26 — ${activeEditorMedium}",
@@ -12,12 +24,13 @@
       "**/venv": true,
       "**/__pycache__": true,
       "**/.ipynb_checkpoints": true,
-      "**/node_modules": true
+      "**/node_modules": true,
     },
     "files.watcherExclude": {
       "**/.venv/**": true,
-      "**/__pycache__/**": true
-    }
+      "**/__pycache__/**": true,
+    },
+    "liveServer.settings.multiRootWorkspaceName": "3210 web app dev",
   },
   "extensions": {
     "recommendations": [
@@ -26,7 +39,7 @@
       "ms-toolsai.jupyter",
       "charliermarsh.ruff",
       "esbenp.prettier-vscode",
-      "dbaeumer.vscode-eslint"
-    ]
-  }
+      "dbaeumer.vscode-eslint",
+    ],
+  },
 }

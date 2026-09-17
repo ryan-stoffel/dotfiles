@@ -8,15 +8,35 @@ in
   home.file.".local/bin/dotfiles-doctor".source = link "scripts/doctor.py";
   home.file.".local/bin/dotfiles-health".source = link "scripts/tui.py";
   home.file.".config/raycast/scripts".source = link "raycast";
-  home.file.".config/just/justfile".source = link "projects/Justfile";
 
-  # Private app runtimes must not take over unrelated development commands.
-  # Only remove the known Hermes links; leave its private installation intact.
-  home.activation.scopeHermesNode = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    for name in node npm npx; do
-      file="$HOME/.local/bin/$name"
-      if [ -L "$file" ] && [ "$(readlink "$file")" = "$HOME/.hermes/node/bin/$name" ]; then
-        run rm "$file"
+  # Custom tap casks are ad-hoc signed; Gatekeeper blocks them after reboot until
+  # quarantine is cleared and the bundle is locally signed again.
+  home.activation.removeRetiredLinks = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    for path in \
+      "$HOME/.config/just/justfile" \
+      "$HOME/.config/herdr/config.toml" \
+      "$HOME/.config/tmux/tmux.conf" \
+      "$HOME/.config/cmux/cmux.json" \
+      "$HOME/.tmux.conf" \
+      "$HOME/.local/bin/herdr-project" \
+      "$HOME/.local/bin/tmux-project" \
+      "$HOME/.local/bin/tmux-dev" \
+      "$HOME/.omp/agent/keybindings.json" \
+      "$HOME/.omp/agent/config.yml" \
+      "$HOME/.omp/agent/skills" \
+      "$HOME/.omp/agent/AGENTS.md"; do
+      if [ -L "$path" ] || [ -e "$path" ]; then
+        run rm -rf "$path"
+      fi
+    done
+  '';
+
+  home.activation.trustedTapApps = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    for app in Caffeine Tidy; do
+      bundle="/Applications/$app.app"
+      if [ -d "$bundle" ]; then
+        /usr/bin/xattr -dr com.apple.quarantine "$bundle" 2>/dev/null || true
+        /usr/bin/codesign --force --deep --sign - "$bundle" 2>/dev/null || true
       fi
     done
   '';

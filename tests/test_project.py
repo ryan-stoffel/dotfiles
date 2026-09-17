@@ -68,9 +68,6 @@ class ProjectTests(unittest.TestCase):
         self.assertIn(str(project.DOTS / "nix-darwin") + "#rust", cmd)
         self.assertEqual(cmd[-2:], ["cargo", "test"])
 
-    def test_session_names_do_not_collide_after_punctuation_normalization(self):
-        self.assertNotEqual(project.session_name("personal/a.b"), project.session_name("personal/a-b"))
-
 
 if __name__ == "__main__":
     unittest.main()

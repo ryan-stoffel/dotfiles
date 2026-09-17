@@ -11,7 +11,8 @@
 
   system.defaults.loginwindow = {
     GuestEnabled = false;
-    SHOWFULLNAME = true;
+    # Username + password field instead of clicking a user tile.
+    SHOWFULLNAME = false;
   };
 
   networking.applicationFirewall = {

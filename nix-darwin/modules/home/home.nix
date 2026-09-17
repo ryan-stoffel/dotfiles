@@ -4,15 +4,10 @@
     ./shell.nix
     ./git.nix
     ./finder.nix
-    ./launchd.nix
     ./zed.nix
     ./vscode.nix
-    ./omp.nix
     ./ghostty.nix
-    ./cmux.nix
-    ./tmux.nix
     ./zellij.nix
-    ./herdr.nix
     ./btop.nix
     ./bat.nix
     ./vesktop.nix

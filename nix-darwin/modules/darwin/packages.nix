@@ -1,7 +1,4 @@
 { pkgs, ... }:
-let
-  bluebubbles-server = pkgs.callPackage ../../packages/bluebubbles-server.nix { };
-in
 {
   environment.systemPath = [
     "/opt/homebrew/bin"
@@ -56,11 +53,10 @@ in
     uv
 
     # dotfiles workflow
-    just
     nixpkgs-fmt
     nil
 
-    # Node runtime with npm and npx (OMP adapters and Postplan CLI)
+    # Node runtime with npm and npx
     nodejs_22
 
     # Previously installed in an unmanaged personal Nix profile.
@@ -77,8 +73,5 @@ in
     # editors
     vim
     neovim
-
-    # macOS apps not available through Homebrew
-    bluebubbles-server
   ];
 }

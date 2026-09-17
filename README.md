@@ -6,23 +6,25 @@ Editable configurations are linked live from this repository.
 
 ## Everyday commands
 
+Zsh aliases (defined in `nix-darwin/modules/home/shell.nix`):
+
 ```sh
-just tui                      # live health dashboard (read-only)
-just doctor                   # read-only workstation checks
-just check                    # focused workflow tests and whitespace checks
-just build                    # build without activation
-just rebuild                  # apply system + home configuration (administrator)
-just update                   # explicitly update flake inputs
-just upgrade-apps             # explicitly update Homebrew packages
-just extensions               # restore recorded VS Code versions; remove extras
-just record-extensions        # record intentional changes after editor updates
-just scan                     # redacted history and working-tree secret scans
-just gc                       # remove Nix generations older than 14 days
+rebuild                       # apply system + home configuration (administrator)
+dbuild                        # build without activation
+dup                           # explicitly update flake inputs
+dbrew                         # explicitly update Homebrew packages
+dext                          # restore recorded VS Code versions; remove extras
+dscan                         # redacted history and working-tree secret scans
+dgc                           # remove Nix generations older than 14 days
+ddoctor                       # read-only workstation checks
+dtui                          # live health dashboard (read-only)
+dcheck                        # focused workflow tests and whitespace checks
+dbootstrap                    # provision a fresh machine from this repo
 ```
 
 Rebuilds do not upgrade Homebrew packages. Removing a cask from the list uninstalls
 it without `zap` deletion of its associated application data. Nix input versions
-remain pinned until `just update`; VS Code extensions remain at the versions in
+remain pinned until `dup`; VS Code extensions remain at the versions in
 `vscode/extensions.txt` until deliberately updated and recorded.
 
 New files must be visible to Git before Nix can import them. Review and add new
@@ -34,30 +36,28 @@ configuration content when necessary.
 
 ```sh
 p list
-p cadence                     # editor + cmux; aliases live in projects/config.toml
+p cadence                     # VS Code + Ghostty; aliases live in projects/config.toml
 p school/capstone             # opens the multi-root VS Code workspace
 p forge --mode terminal
-p cadence --mode herdr
 p run test cadence
 p run check ember-sync-poc --dry-run
 p run check                   # select the repository containing the current directory
-just -g test cadence          # same task interface through the global Justfile
 ```
 
 Discovery walks personal/work/school containers, recognizes nested repositories,
 and stops before traversing their dependency/build trees. Hidden directories are
 excluded. Ambiguous names require selection in a terminal or an exact path in
-Raycast. Existing `t`, `tp`, and `hp` entry points use the same launcher. Named
-shell aliases are generated from the shared registry.
+Raycast. Named shell aliases are generated from the shared registry.
 
 `projects/config.toml` holds aliases, workspace choices, and explicit argument
 arrays for task overrides. A repository's Justfile takes precedence over inferred
-commands. Otherwise `dev`, `build`, `test`, `lint`, and `check` dispatch to the
-project's stack. Node checks run its declared lint/typecheck/test scripts in that
-order (or its explicit check script). Unsupported tasks fail with an explanation;
-they are not treated as passing tests. Add a real project command when needed.
-Python `dev` requires an explicit entry point; ember-bench currently shows its CLI
-help. Xcode-only projects open in Xcode and need project-specific task definitions.
+commands when `just` is available on PATH. Otherwise `dev`, `build`, `test`, `lint`,
+and `check` dispatch to the project's stack. Node checks run its declared
+lint/typecheck/test scripts in that order (or its explicit check script).
+Unsupported tasks fail with an explanation; they are not treated as passing tests.
+Add a real project command when needed. Python `dev` requires an explicit entry
+point; ember-bench currently shows its CLI help. Xcode-only projects open in Xcode
+and need project-specific task definitions.
 
 No application test, build, or dev server is started just by opening a project.
 
@@ -80,19 +80,15 @@ direnv allow ~/Developer/personal/files.stoffel.org
 The generated `.envrc` references this machine's dotfiles flake. If the project
 already has its own flake, it references that instead. This is a local workstation
 convenience; a team project should commit a self-contained dev shell and lockfile.
-The launcher never auto-approves an existing `.envrc`. The initial setup added
-and approved the newly generated files for files.stoffel.org, ember-bench, and
-cadence; their existing source files were left intact.
+The launcher never auto-approves an existing `.envrc`.
 
 Swift uses the selected Apple Xcode toolchain. `xcodes installed` lists versions;
 `xcodes select` selects one. Use a project `.xcode-version` when maintaining multiple
 SDK versions. The existing App Store Xcode remains declared; xcodes is available
 for deliberate additional versions, not an automatic second installation.
 
-Hermes retains its private Node installation and gateway environment. Its known
-`~/.local/bin/{node,npm,npx}` links are removed during activation so they cannot
-override the declared development runtime. Java, Maven, and PostgreSQL clients
-are declared in Nix; PostgreSQL is not automatically started as a server.
+Java, Maven, and PostgreSQL clients are declared in Nix; PostgreSQL is not
+automatically started as a server.
 
 ## Raycast
 
@@ -120,17 +116,11 @@ containing `op://` references. Do not commit plaintext credentials. `sops`, `age
 and `.sops.yaml` remain available for manual encryption, but this configuration
 does not use sops-nix or decrypt secrets at activation.
 
-Homebrew manages Ollama's login service. Home Manager declares the Hermes gateway
-with its private environment; it exits cleanly before Hermes onboarding. These
-services depend on app-owned models, account settings, and private environments
-that must be restored or onboarded separately.
-
 In System Settings > Privacy & Security > FileVault, enable FileVault and choose
 an account/recovery-key recovery method. Keep recovery material off this Mac.
 Configure Time Machine with your chosen backup disk/network destination and test
-restoring a file. There was no backup destination configured at audit time.
-Dotfiles Git history does not back up uncommitted projects, keys, databases, or
-application state. `just doctor` reports these unfinished setup steps.
+restoring a file. Dotfiles Git history does not back up uncommitted projects, keys,
+databases, or application state. `ddoctor` reports unfinished setup steps.
 
 ## Fresh machine
 
@@ -144,20 +134,19 @@ upstream Nix, and Homebrew, then builds the locked configuration as your normal
 user and activates its concrete store output with sudo. This avoids root Git
 repository-ownership failures without weakening Git trust settings.
 Sign into the App Store for Xcode/Windows App installation. Restore local SSH keys
-or configure 1Password, onboard Hermes if needed, register Raycast scripts, and
-open Docker Desktop to complete its setup and start its engine. macOS may request
-administrator authentication and application permissions.
+or configure 1Password, register Raycast scripts, and open Docker Desktop to
+complete its setup and start its engine. macOS may request administrator
+authentication and application permissions.
 
 ## Layout
 
 - `nix-darwin/`: system and Home Manager modules, pinned inputs, dev shells.
 - `scripts/`: bootstrap, shared project launcher, health checks, dashboard, extension synchronizer.
-- `projects/`: launcher registry and global Justfile.
+- `projects/`: launcher registry.
 - `raycast/`: launcher and diagnostic Script Commands.
 - `ssh/`: connection settings, with no private keys.
-- `vscode/`, `zed/`, `ghostty/`, `cmux/`: editable app settings.
-- `tmux/`, `herdr/`, `zellij/`: terminal configuration and compatibility commands.
-- `omp/`: agent configuration, instructions, and skills; runtime auth is excluded.
+- `vscode/`, `zed/`, `ghostty/`: editable app settings.
+- `zellij/`: terminal multiplexer layouts.
 - `docs/git-workflow.md`: worktree organization and GitButler tradeoffs.
 
 The terminal background remains true black. Application settings can write into

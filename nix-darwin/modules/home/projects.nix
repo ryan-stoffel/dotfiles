@@ -9,8 +9,7 @@ in
   home.file.".local/bin/dotfiles-health".source = link "scripts/tui.py";
   home.file.".config/raycast/scripts".source = link "raycast";
 
-  # Custom tap casks are ad-hoc signed; Gatekeeper blocks them after reboot until
-  # quarantine is cleared and the bundle is locally signed again.
+  # One-time cleanup of symlinks from removed Home Manager modules.
   home.activation.removeRetiredLinks = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     for path in \
       "$HOME/.config/just/justfile" \
@@ -24,13 +23,16 @@ in
       "$HOME/.omp/agent/keybindings.json" \
       "$HOME/.omp/agent/config.yml" \
       "$HOME/.omp/agent/skills" \
-      "$HOME/.omp/agent/AGENTS.md"; do
+      "$HOME/.omp/agent/AGENTS.md" \
+      "$HOME/.config/zed/tasks.json"; do
       if [ -L "$path" ] || [ -e "$path" ]; then
         run rm -rf "$path"
       fi
     done
   '';
 
+  # Custom tap casks are ad-hoc signed; Gatekeeper blocks them after reboot until
+  # quarantine is cleared and the bundle is locally signed again.
   home.activation.trustedTapApps = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     for app in Caffeine Tidy; do
       bundle="/Applications/$app.app"

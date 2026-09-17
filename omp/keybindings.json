@@ -1,7 +1,0 @@
-{
-  "tui.editor.cursorUp": ["up", "ctrl+p"],
-  "tui.editor.cursorDown": ["down", "ctrl+n"],
-  "tui.editor.pageUp": ["pageUp"],
-  "tui.editor.pageDown": ["pageDown"],
-  "app.models.save": ["ctrl+s", "alt+s", "meta+s"]
-}

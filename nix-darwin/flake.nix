@@ -34,7 +34,6 @@
         modules = [
           ./modules/darwin/packages.nix
           ./modules/darwin/homebrew.nix
-          ./modules/darwin/homebrew-trust.nix
           ./modules/darwin/system-defaults.nix
           ./modules/darwin/security.nix
           ./modules/darwin/fonts.nix

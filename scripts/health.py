@@ -51,8 +51,18 @@ def short(store_path):
 
 
 def system():
-    required = [*DOTS.glob("nix-darwin/**/*.nix"), *DOTS.glob("vscode/*"),
-                *DOTS.glob("scripts/*.py"), DOTS / "projects/config.toml", DOTS / "ssh/config"]
+    required = [
+        *DOTS.glob("nix-darwin/**/*.nix"),
+        *DOTS.glob("vscode/*"),
+        *DOTS.glob("zed/*"),
+        *DOTS.glob("zellij/**/*"),
+        DOTS / "ghostty/config",
+        *DOTS.glob("raycast/*"),
+        *DOTS.glob("scripts/*.py"),
+        *DOTS.glob("tests/*.py"),
+        DOTS / "projects/config.toml",
+        DOTS / "ssh/config",
+    ]
     listed = {p for p in command(["git", "ls-files", "-z"]).stdout.split("\0") if p}
     missing = sorted(p.relative_to(DOTS).as_posix() for p in required
                      if p.relative_to(DOTS).as_posix() not in listed)

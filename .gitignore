@@ -1,6 +1,7 @@
 # Nix build artifacts
 result
 result-*
+**/result
 
 # home-manager backups
 *.hm-backup

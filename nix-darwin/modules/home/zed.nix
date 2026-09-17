@@ -7,5 +7,4 @@ in
   # Live symlinks to the real files in the repo — edits apply without a rebuild.
   home.file.".config/zed/settings.json".source = link "settings.json";
   home.file.".config/zed/keymap.json".source = link "keymap.json";
-  home.file.".config/zed/tasks.json".source = link "tasks.json";
 }

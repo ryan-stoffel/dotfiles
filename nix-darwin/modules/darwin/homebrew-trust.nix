@@ -1,22 +1,28 @@
 { config, lib, ... }:
 let
   user = config.system.primaryUser;
+  trustJson = builtins.toJSON {
+    trustedtaps = [ "ryanstoffel/tap" "ryanstoffel/taps" ];
+    trustedcasks = [
+      "ryanstoffel/tap/caffeine"
+      "ryanstoffel/tap/tidy"
+      "ryanstoffel/taps/caffeine"
+      "ryanstoffel/taps/tidy"
+    ];
+  };
 in
 {
-  # Homebrew 4.x requires explicit cask trust for third-party taps during cleanup.
-  system.activationScripts.homebrew.text = lib.mkBefore ''
-    if [ -x /opt/homebrew/bin/brew ]; then
-      echo "Trusting ryanstoffel/tap casks..."
-      trust_tap() {
-        for tap in ryanstoffel/tap ryanstoffel/taps; do
-          "$1" /opt/homebrew/bin/brew trust "$tap" 2>/dev/null || true
-        done
-        for cask in ryanstoffel/tap/caffeine ryanstoffel/tap/tidy ryanstoffel/taps/caffeine ryanstoffel/taps/tidy; do
-          "$1" /opt/homebrew/bin/brew trust --cask "$cask" 2>/dev/null || true
-        done
-      }
-      trust_tap /opt/homebrew/bin/env
-      trust_tap "/usr/bin/sudo -u ${user} -H /usr/bin/env"
-    fi
+  # Runs before the Homebrew activation script (see nix-darwin activation order).
+  system.activationScripts.preActivation.text = lib.mkAfter ''
+    user="${user}"
+    user_home=$(/usr/bin/dscl . -read "/Users/$user" NFSHomeDirectory 2>/dev/null | /usr/bin/awk 'NF==2 {print $2}')
+    user_home="''${user_home:-/Users/$user}"
+    trust_json='${trustJson}'
+
+    for home in "$user_home" /var/root; do
+      /bin/mkdir -p "$home/.homebrew"
+      printf '%s\n' "$trust_json" > "$home/.homebrew/trust.json"
+    done
+    /usr/sbin/chown -R "$user":staff "$user_home/.homebrew"
   '';
 }

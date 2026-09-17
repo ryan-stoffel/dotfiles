@@ -4,11 +4,11 @@
     enable = true;
     onActivation.autoUpdate = false;
     onActivation.upgrade = false;
-    # "uninstall" runs `brew cleanup`, which fails for root during activation when
-    # custom tap casks require a user-scoped trust record. Declared casks are
-    # still installed/upgraded; remove extras with `brew uninstall` or re-enable
-    # cleanup after `brew trust ryanstoffel/taps` as your login user.
-    onActivation.cleanup = "none";
+    onActivation.cleanup = "uninstall";
+    # Custom tap casks during `--force-cleanup`; taps are declared trusted in Nix.
+    onActivation.extraEnv = {
+      HOMEBREW_NO_REQUIRE_TAP_TRUST = "1";
+    };
 
     taps = [
       {

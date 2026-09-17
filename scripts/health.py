@@ -190,11 +190,6 @@ def security():
     yield Check("security", "FileVault", "ok" if "FileVault is On" in vault else "warn",
                 vault.rstrip(".") or "status unavailable",
                 "" if "FileVault is On" in vault else "System Settings > Privacy & Security")
-    backup = command(["/usr/bin/tmutil", "destinationinfo"])
-    configured = backup.returncode == 0 and "Mount Point" in backup.stdout
-    yield Check("security", "Time Machine", "ok" if configured else "warn",
-                "destination configured" if configured else "no destination",
-                "" if configured else "System Settings > General > Time Machine")
     free = shutil.disk_usage(HOME).free / (1024 ** 3)
     yield Check("security", "Disk free", "warn" if free < 50 else "ok", f"{free:.1f} GiB")
 

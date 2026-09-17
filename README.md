@@ -116,9 +116,8 @@ containing `op://` references. Do not commit plaintext credentials.
 
 In System Settings > Privacy & Security > FileVault, enable FileVault and choose
 an account/recovery-key recovery method. Keep recovery material off this Mac.
-Configure Time Machine with your chosen backup disk/network destination and test
-restoring a file. Dotfiles Git history does not back up uncommitted projects, keys,
-databases, or application state. `ddoctor` reports unfinished setup steps.
+Dotfiles Git history does not back up uncommitted projects, keys, databases, or
+application state. `ddoctor` reports unfinished setup steps.
 
 ## Fresh machine
 

@@ -2,12 +2,10 @@
 let
   user = config.system.primaryUser;
   trustJson = builtins.toJSON {
-    trustedtaps = [ "ryanstoffel/tap" "ryanstoffel/taps" ];
+    trustedtaps = [ "ryanstoffel/tap" ];
     trustedcasks = [
       "ryanstoffel/tap/caffeine"
       "ryanstoffel/tap/tidy"
-      "ryanstoffel/taps/caffeine"
-      "ryanstoffel/taps/tidy"
     ];
   };
 in
@@ -17,9 +15,8 @@ in
     onActivation.autoUpdate = false;
     onActivation.upgrade = false;
     onActivation.cleanup = "uninstall";
-    # Custom tap casks during `--force-cleanup`; taps are declared trusted in Nix.
     onActivation.extraEnv = {
-      HOMEBREW_NO_REQUIRE_TAP_TRUST = "1";
+      HOMEBREW_NO_ENV_HINTS = "1";
     };
 
     taps = [

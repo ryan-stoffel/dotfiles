@@ -2,10 +2,10 @@
 let
   user = config.system.primaryUser;
   trustJson = builtins.toJSON {
-    trustedtaps = [ "ryanstoffel/tap" ];
+    trustedtaps = [ "ryan-stoffel/taps" ];
     trustedcasks = [
-      "ryanstoffel/tap/caffeine"
-      "ryanstoffel/tap/tidy"
+      "ryan-stoffel/taps/caffeine"
+      "ryan-stoffel/taps/tidy"
     ];
   };
 in
@@ -21,7 +21,7 @@ in
 
     taps = [
       {
-        name = "ryanstoffel/tap";
+        name = "ryan-stoffel/taps";
         trusted = true;
       }
     ];
@@ -67,8 +67,8 @@ in
       "1password-cli"
       "alt-tab"
       "mysides"
-      "ryanstoffel/tap/caffeine"
-      "ryanstoffel/tap/tidy"
+      "ryan-stoffel/taps/caffeine"
+      "ryan-stoffel/taps/tidy"
 
       # media
       "spotify"

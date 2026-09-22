@@ -38,6 +38,7 @@
           ./modules/darwin/security.nix
           ./modules/darwin/limits.nix
           ./modules/darwin/fonts.nix
+          ./modules/darwin/nix-daemon.nix
           home-manager.darwinModules.home-manager
           {
             system.primaryUser = username;

@@ -6,6 +6,7 @@ let
     trustedcasks = [
       "ryan-stoffel/taps/caffeine"
       "ryan-stoffel/taps/tidy"
+      "ryan-stoffel/taps/auto-peer-evals"
     ];
   };
 in
@@ -49,6 +50,7 @@ in
 
       # browsers
       "zen"
+      "helium-browser"
       "photon"
 
       # communication
@@ -69,6 +71,7 @@ in
       "mysides"
       "ryan-stoffel/taps/caffeine"
       "ryan-stoffel/taps/tidy"
+      "ryan-stoffel/taps/auto-peer-evals"
 
       # media
       "spotify"

@@ -45,7 +45,6 @@ in
       "antigravity-cli"
       "cursor"
       "grok-bot"
-      "chatgpt"
       "figma"
 
       # browsers

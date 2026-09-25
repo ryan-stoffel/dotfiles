@@ -47,6 +47,11 @@ in
       "grok-bot"
       "figma"
 
+      # microsoft office
+      "microsoft-word"
+      "microsoft-excel"
+      "microsoft-powerpoint"
+
       # browsers
       "zen"
       "helium-browser"

@@ -14,7 +14,7 @@ HOME = Path.home()
 HOST = "macbook"
 LEVELS = {"ok": "PASS", "warn": "WARN", "fail": "FAIL"}
 # Rendered in this order; each group is produced by exactly one task.
-GROUPS = ("system", "git", "services", "tools", "links", "ssh", "editor", "security")
+GROUPS = ("system", "git", "services", "tools", "links", "layout", "ssh", "editor", "security")
 
 
 @dataclasses.dataclass(frozen=True)
@@ -152,6 +152,27 @@ def links():
         yield Check("links", f"~/{dest}", "ok" if ok else "fail", "", "" if ok else "rebuild")
 
 
+LAYOUT = {
+    "": {"Applications", "Desktop", "Developer", "Documents", "Downloads", "Library", "Movies", "Music",
+         "Pictures", "Public"},
+    "Documents": {"Career", "Personal", "School", "Work"},
+    "Downloads": {"Code", "Documents", "Images", "Random", "Videos"},
+}
+
+
+def layout():
+    for folder, allowed in LAYOUT.items():
+        root = HOME / folder
+        name = f"~/{folder}" if folder else "~"
+        try:
+            extra = sorted(p.name for p in root.iterdir() if not p.name.startswith(".") and p.name not in allowed)
+        except OSError as error:
+            yield Check("layout", name, "warn", str(error))
+            continue
+        yield Check("layout", name, "warn" if extra else "ok", ", ".join(extra) or "clean",
+                    "move into ~/Developer or delete" if extra else "")
+
+
 def ssh():
     socket = HOME / "Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
     yield Check("ssh", "1Password agent", "ok" if socket.is_socket() else "warn",
@@ -194,7 +215,7 @@ def security():
     yield Check("security", "Disk free", "warn" if free < 50 else "ok", f"{free:.1f} GiB")
 
 
-TASKS = (system, git, services, tools, links, ssh, editor, security)
+TASKS = (system, git, services, tools, links, layout, ssh, editor, security)
 
 
 def collect(task):

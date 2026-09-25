@@ -11,6 +11,7 @@
     ./vesktop.nix
     ./projects.nix
     ./ssh.nix
+    ./layout.nix
   ];
 
   home.username = "ryanstoffel";

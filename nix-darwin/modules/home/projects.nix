@@ -9,6 +9,10 @@ in
   home.file.".local/bin/dotfiles-health".source = link "scripts/tui.py";
   home.file.".config/raycast/scripts".source = link "raycast";
 
+  home.activation.linkAgents = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run /bin/bash "${dotfiles}/scripts/link-agents.sh"
+  '';
+
   # One-time cleanup of symlinks from removed Home Manager modules.
   home.activation.removeRetiredLinks = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     for path in \

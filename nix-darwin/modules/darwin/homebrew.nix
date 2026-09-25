@@ -72,6 +72,7 @@ in
       "ryan-stoffel/taps/caffeine"
       "ryan-stoffel/taps/tidy"
       "ryan-stoffel/taps/auto-peer-evals"
+      "shottr"
 
       # media
       "spotify"

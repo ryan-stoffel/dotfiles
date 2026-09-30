@@ -49,5 +49,7 @@ in
         /usr/bin/codesign --force --deep --sign - "$bundle" 2>/dev/null || true
       fi
     done
+    # Hush only needs quarantine cleared; re-signing would reset its TCC grants.
+    /usr/bin/xattr -dr com.apple.quarantine /Applications/Hush.app 2>/dev/null || true
   '';
 }

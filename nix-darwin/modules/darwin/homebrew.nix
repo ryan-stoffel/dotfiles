@@ -7,6 +7,7 @@ let
       "ryan-stoffel/taps/caffeine"
       "ryan-stoffel/taps/tidy"
       "ryan-stoffel/taps/auto-peer-evals"
+      "ryan-stoffel/taps/hush"
     ];
   };
 in
@@ -39,14 +40,14 @@ in
       "visual-studio-code"
       "docker-desktop"
       "claude"
-      "claude-code"
+      "claude-code@latest"
       "github"
       "codex"
       "antigravity-cli"
       "cursor"
       "grok-bot"
-      "figma"
       "chatgpt"
+      "figma"
 
       # microsoft office
       "microsoft-word"
@@ -77,6 +78,7 @@ in
       "ryan-stoffel/taps/caffeine"
       "ryan-stoffel/taps/tidy"
       "ryan-stoffel/taps/auto-peer-evals"
+      "ryan-stoffel/taps/hush"
       "shottr"
 
       # media

@@ -46,6 +46,7 @@ in
       "cursor"
       "grok-bot"
       "figma"
+      "chatgpt"
 
       # microsoft office
       "microsoft-word"

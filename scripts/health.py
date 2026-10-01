@@ -146,7 +146,12 @@ def links():
     managed = {".config/ghostty/config": "ghostty/config", ".local/bin/project": "scripts/project.py",
                ".ssh/config": "ssh/config", ".config/raycast/scripts": "raycast",
                "Library/Application Support/Code/User/settings.json": "vscode/settings.json",
-               ".claude/CLAUDE.md": "agents/AGENTS.md", ".codex/AGENTS.md": "agents/AGENTS.md"}
+               ".claude/CLAUDE.md": "agents/AGENTS.md", ".codex/AGENTS.md": "agents/AGENTS.md",
+               ".cursor/rules/shared/RULE.md": "agents/AGENTS.md",
+               ".claude/settings.json": "agents/claude/settings.json",
+               ".codex/config.toml": "agents/codex/config.toml",
+               ".cursor/cli-config.json": "agents/cursor/cli-config.json",
+               "Library/Application Support/Cursor/User/settings.json": "agents/cursor/settings.json"}
     for dest, source in managed.items():
         path = HOME / dest
         ok = path.is_symlink() and path.exists() and path.resolve() == (DOTS / source).resolve()

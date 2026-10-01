@@ -1,0 +1,171 @@
+model = "gpt-6-sol"
+model_reasoning_effort = "medium"
+notify = [ "/Users/ryanstoffel/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended" ]
+service_tier = "default"
+
+[projects."/Users/ryanstoffel/.dotfiles"]
+trust_level = "trusted"
+
+[projects."/Users/ryanstoffel/Developer/personal"]
+trust_level = "trusted"
+
+[projects."/Users/ryanstoffel/Developer/school/capstone/ember"]
+trust_level = "trusted"
+
+[projects."/Users/ryanstoffel/.codex/.chatgpt-projects/g-p-6ab58ab016f481919527137d7fc443e9"]
+trust_level = "trusted"
+
+[projects."/Users/ryanstoffel/Developer/personal/wisp"]
+trust_level = "trusted"
+
+[projects."/Users/ryanstoffel"]
+trust_level = "trusted"
+
+[mcp_servers.brilliant]
+url = "http://127.0.0.1:3333/mcp"
+
+[mcp_servers.computer-use]
+command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
+args = ["mcp"]
+cwd = "."
+enabled = false
+
+[mcp_servers.node_repl]
+args = []
+command = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node_repl"
+startup_timeout_sec = 120
+
+[mcp_servers.node_repl.env]
+NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
+NODE_REPL_NODE_MODULE_DIRS = "/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
+NODE_REPL_NODE_PATH = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
+NODE_REPL_TRUSTED_CODE_PATHS = "/Users/ryanstoffel/.codex:/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
+CODEX_HOME = "/Users/ryanstoffel/.codex"
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab,mcpapps"
+BROWSER_USE_TINYSKY_ENABLED = "1"
+NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
+NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
+NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = "Control desktop apps on macOS through Computer Use."
+BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
+BROWSER_USE_CODEX_APP_VERSION = "26.928.20755"
+NODE_REPL_TRUSTED_SERVICES = '{"browser":"/Users/ryanstoffel/.codex/plugins/cache/openai-bundled/browser/26.928.20755/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
+SKY_CUA_SERVICE_PATH = "/Users/ryanstoffel/.codex/computer-use/Codex Computer Use.app"
+CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex"
+
+[mcp_servers.cua_repl]
+command = "/Applications/ChatGPT.app/Contents/MacOS/ChatGPT"
+enabled = false
+
+[features]
+hooks = true
+
+[tui]
+screen_reader_detection_done = true
+
+[tui.model_availability_nux]
+gpt-6-astra = 1
+
+[desktop]
+followUpQueueMode = "steer"
+conversationDetailMode = "STEPS_COMMANDS"
+ambient-suggestions-enabled = false
+external-agent-import-sync-item-types = "all"
+external-agent-import-sync-enabled = true
+appearanceDarkCodeThemeId = "vscode-plus"
+dock-icon-preference = "codex-system"
+usePointerCursors = true
+appearanceDiffMarkerStyle = "symbols"
+
+[desktop.appearanceDarkChromeTheme]
+accent = "#007acc"
+accentSource = "custom"
+contrast = 60
+ink = "#d4d4d4"
+opaqueWindows = false
+surface = "#1e1e1e"
+
+[desktop.appearanceDarkChromeTheme.fonts]
+code = '"JetBrainsMono Nerd Font Mono"'
+content = '"JetBrainsMono Nerd Font Mono"'
+
+[desktop.appearanceDarkChromeTheme.semanticColors]
+diffAdded = "#369432"
+diffRemoved = "#f44747"
+skill = "#000080"
+
+[marketplaces.openai-bundled]
+source_type = "local"
+source = "/Users/ryanstoffel/.codex/.tmp/bundled-marketplaces/openai-bundled"
+
+[marketplaces.openai-primary-runtime]
+source_type = "local"
+source = "/Users/ryanstoffel/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
+
+[marketplaces.claude-plugins-official]
+source_type = "git"
+source = "https://github.com/anthropics/claude-plugins-official.git"
+
+[marketplaces.claude-cowork]
+source_type = "local"
+source = "/Users/ryanstoffel/.codex/plugins/cache/claude-cowork"
+
+[marketplaces.ponytail]
+source_type = "git"
+source = "https://github.com/DietrichGebert/ponytail.git"
+
+[plugins."codex-app-tools@openai-bundled"]
+enabled = true
+
+[plugins."visualize@openai-bundled"]
+enabled = true
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."pdf@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."template-creator@openai-primary-runtime"]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = false
+
+[plugins."unified-computer-use@openai-bundled"]
+enabled = false
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[plugins."swift-lsp@claude-plugins-official"]
+enabled = true
+
+[plugins."anthropic-skills@claude-cowork"]
+enabled = true
+
+[plugins."cowork-plugin-management@claude-cowork"]
+enabled = true
+
+[plugins."code-review@openai-bundled"]
+enabled = true
+
+[plugins."ponytail@ponytail"]
+enabled = true
+
+[hooks.state."/Users/ryanstoffel/.codex/hooks.json:session_start:0:0"]
+trusted_hash = "sha256:36a2c44ebdf0e2b28a8208fa07d692aad47efe66b6458fe1d1dd5df68b4467b0"
+
+[hooks.state."ponytail@ponytail:hooks/claude-codex-hooks.json:session_start:0:0"]
+trusted_hash = "sha256:5f81d38f47448a1581c08ec877e044d9e04dd6f814dce3f2671f7a8edadd719b"
+
+[hooks.state."ponytail@ponytail:hooks/claude-codex-hooks.json:user_prompt_submit:0:0"]
+trusted_hash = "sha256:6a6f42bc3b58d6262db38bfd74d7f340fcca2b09cdb134aad365063f0bfefca4"
+
+[hooks.state."ponytail@ponytail:hooks/claude-codex-hooks.json:subagent_start:0:0"]
+trusted_hash = "sha256:1423b56c1322f96c8f74c51c1e7ae9a047b904c1fa43ee9165d462fd7a6e70ef"

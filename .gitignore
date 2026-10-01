@@ -30,3 +30,7 @@ __pycache__/
 # Machine-local overrides — internal hosts and project paths stay untracked
 ssh/config.local
 projects/config.local.toml
+agents/claude/settings.local.json
+agents/claude/settings.json
+agents/cursor/cli-config.json
+agents/cursor/argv.json

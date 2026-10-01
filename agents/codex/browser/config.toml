@@ -1,0 +1,5 @@
+[origins]
+allowed = [
+    "https://github.com",
+    "https://www.linkedin.com",
+]

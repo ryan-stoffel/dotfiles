@@ -154,6 +154,11 @@ authentication and application permissions.
 
 ## Layout
 
+- `agents/`: Claude, Codex, and Cursor settings. Edit `agents/AGENTS.md` for shared
+  instructions and add personal skills under `agents/skills/<name>/SKILL.md`.
+  `scripts/link-agents.sh` links these into each app's expected location; app-managed
+  skills, credentials, and session history remain in their native directories.
+  Claude settings and Cursor CLI settings contain credentials, so Git ignores them.
 - `nix-darwin/`: system and Home Manager modules, pinned inputs, dev shells.
 - `scripts/`: bootstrap, shared project launcher, health checks, dashboard, extension synchronizer.
 - `projects/`: launcher registry.

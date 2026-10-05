@@ -97,6 +97,14 @@ In addition to clearly communicating. It's important that we clearly communicate
   - Images embedded directly into a PR
   - Gifs embedded directly into a PR
 
+### 8. GitHub Rate Limits
+
+All agents share one `gh` login and its 5,000 requests/hour REST quota. Do not exhaust it.
+
+- Do not poll. Use one watcher per PR and do not run `gh` status loops alongside it. Call `gh` only when needed.
+- Prefer GraphQL-backed commands (`gh pr view`, `gh pr merge`, `gh pr checks`) over REST-backed ones (`gh run view`, `gh run list`, `gh api`). GraphQL has a separate 5,000 bucket.
+- Check usage with `gh api rate_limit` before and after a quiet minute.
+
 ### Examples
 
 Here are concrete examples of how we DO and DO NOT communicate together. Replicate how we DO communicate together and avoid how we DO NOT communicate together.

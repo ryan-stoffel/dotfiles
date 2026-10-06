@@ -8,7 +8,8 @@
 set -uo pipefail
 
 REPO="${DOTFILES:-$HOME/.dotfiles}"
-FLAKE="$REPO/nix-darwin#macbook"
+HOST="${DOTFILES_HOST:-$(cat /etc/dotfiles-host 2>/dev/null || echo macbook)}"
+FLAKE="$REPO/nix-darwin#$HOST"
 DARWIN_STORE=/Library/LaunchDaemons/org.nixos.darwin-store.plist
 NIX_DAEMON=/Library/LaunchDaemons/org.nixos.nix-daemon.plist
 

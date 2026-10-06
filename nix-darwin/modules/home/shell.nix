@@ -1,7 +1,7 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, host, ... }:
 let
   dotfiles = "$HOME/.dotfiles";
-  flake = "${dotfiles}/nix-darwin#macbook";
+  flake = "${dotfiles}/nix-darwin#${host}";
 in
 {
   programs.zsh = {

@@ -1,9 +1,9 @@
-{ ... }:
+{ username, ... }:
 {
   nix.settings.experimental-features = "nix-command flakes";
 
-  users.users.ryanstoffel = {
-    home = "/Users/ryanstoffel";
+  users.users.${username} = {
+    home = "/Users/${username}";
   };
 
   system.defaults = {

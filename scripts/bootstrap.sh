@@ -5,7 +5,7 @@ set -euo pipefail
 
 REPO="$HOME/.dotfiles"
 FLAKE="$REPO/nix-darwin"
-HOST="macbook"
+HOST="${DOTFILES_HOST:-$(cat /etc/dotfiles-host 2>/dev/null || echo macbook)}"
 
 log() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 
@@ -39,7 +39,7 @@ fi
 
 # 5. Build as the owner using the lockfile, then activate the resulting system.
 log "Running first darwin-rebuild switch..."
-"$REPO/scripts/rebuild.sh"
+DOTFILES_HOST="$HOST" "$REPO/scripts/rebuild.sh"
 
 log "Done. From now on use: rebuild"
 log "Complete the app and security steps documented in README.md, then run ddoctor."

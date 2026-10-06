@@ -11,7 +11,8 @@ import time
 
 DOTS = Path(__file__).resolve().parents[1]
 HOME = Path.home()
-HOST = "macbook"
+HOST = os.environ.get("DOTFILES_HOST") or (Path("/etc/dotfiles-host").read_text().strip()
+                                           if Path("/etc/dotfiles-host").is_file() else "macbook")
 LEVELS = {"ok": "PASS", "warn": "WARN", "fail": "FAIL"}
 # Rendered in this order; each group is produced by exactly one task.
 GROUPS = ("system", "git", "services", "tools", "links", "layout", "ssh", "editor", "security")

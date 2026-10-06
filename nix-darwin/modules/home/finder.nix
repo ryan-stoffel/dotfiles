@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, username, ... }:
 {
   home.activation.finderSidebar = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     MYSIDES=""
@@ -16,7 +16,7 @@
       done
 
       for entry in \
-        "ryanstoffel file://$HOME/" \
+        "${username} file://$HOME/" \
         "Developer file://$HOME/Developer/" \
         "Documents file://$HOME/Documents/" \
         "Downloads file://$HOME/Downloads/" \

@@ -12,7 +12,32 @@
   outputs = { self, nixpkgs, nix-darwin, home-manager, ... }@inputs:
     let
       system = "aarch64-darwin";
-      username = "ryanstoffel";
+
+      # One configuration per machine. Scripts read /etc/dotfiles-host to pick theirs.
+      mkHost = { host, username, laptop }: nix-darwin.lib.darwinSystem {
+        inherit system;
+        specialArgs = { inherit host username laptop; };
+        modules = [
+          ./modules/darwin/packages.nix
+          ./modules/darwin/homebrew.nix
+          ./modules/darwin/system-defaults.nix
+          ./modules/darwin/security.nix
+          ./modules/darwin/limits.nix
+          ./modules/darwin/fonts.nix
+          ./modules/darwin/nix-daemon.nix
+          ./modules/darwin/desktop.nix
+          home-manager.darwinModules.home-manager
+          {
+            environment.etc."dotfiles-host".text = host;
+            system.primaryUser = username;
+            home-manager.backupFileExtension = "hm-backup";
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = { inherit host username laptop; };
+            home-manager.users.${username} = import ./modules/home/home.nix;
+          }
+        ];
+      };
     in
     {
       devShells.${system} =
@@ -29,25 +54,9 @@
           swift = shell [ ];
         };
 
-      darwinConfigurations."macbook" = nix-darwin.lib.darwinSystem {
-        inherit system;
-        modules = [
-          ./modules/darwin/packages.nix
-          ./modules/darwin/homebrew.nix
-          ./modules/darwin/system-defaults.nix
-          ./modules/darwin/security.nix
-          ./modules/darwin/limits.nix
-          ./modules/darwin/fonts.nix
-          ./modules/darwin/nix-daemon.nix
-          home-manager.darwinModules.home-manager
-          {
-            system.primaryUser = username;
-            home-manager.backupFileExtension = "hm-backup";
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.${username} = import ./modules/home/home.nix;
-          }
-        ];
+      darwinConfigurations = {
+        macbook = mkHost { host = "macbook"; username = "ryanstoffel"; laptop = true; };
+        macmini = mkHost { host = "macmini"; username = "ryan-stoffel"; laptop = false; };
       };
     };
 }

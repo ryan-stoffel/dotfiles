@@ -140,8 +140,14 @@ The script checks Background Task Management (enable Nix **sh** items under
 
 ```sh
 git clone https://github.com/RyanStoffel/dotfiles.git ~/.dotfiles
-~/.dotfiles/scripts/bootstrap.sh
+DOTFILES_HOST=macmini ~/.dotfiles/scripts/bootstrap.sh   # or macbook
 ```
+
+Each machine is a `darwinConfigurations` entry in `nix-darwin/flake.nix` (username,
+laptop or desktop). The first build records the host in `/etc/dotfiles-host`, which
+`rebuild` and the other scripts read afterwards. Desktop-only power settings live in
+`modules/darwin/desktop.nix`. If activation reports unexpected `/etc/bashrc` and
+`/etc/zshrc`, rename both with a `.before-nix-darwin` suffix and run `rebuild.sh` again.
 
 Bootstrap installs command-line tools (rerun after Apple's installer completes),
 upstream Nix, and Homebrew, then builds the locked configuration as your normal

@@ -1,4 +1,4 @@
-{ ... }:
+{ laptop, ... }:
 {
   programs.btop = {
     enable = true;
@@ -11,7 +11,7 @@
       rounded_corners = false;
       # Braille glyphs read as a finer trace than the default blocks.
       graph_symbol = "braille";
-      show_battery = true;
+      show_battery = laptop;
       update_ms = 1000;
     };
   };

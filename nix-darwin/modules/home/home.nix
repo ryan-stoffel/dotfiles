@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, username, ... }:
 {
   imports = [
     ./shell.nix
@@ -14,8 +14,8 @@
     ./layout.nix
   ];
 
-  home.username = "ryanstoffel";
-  home.homeDirectory = "/Users/ryanstoffel";
+  home.username = username;
+  home.homeDirectory = "/Users/${username}";
   home.stateVersion = "24.05";
   home.sessionPath = [
     "$HOME/.npm-global/bin"

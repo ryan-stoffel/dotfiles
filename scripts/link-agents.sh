@@ -10,6 +10,11 @@ link_config() {
     mv "$target" "$source"
   fi
   if [ -e "$source" ]; then
+    # App-written configs embed absolute paths; another machine's home would break the app.
+    if grep -o '/Users/[^/"]*' "$source" 2>/dev/null | grep -qv "^$HOME\$"; then
+      echo "link-agents: $source references another machine's home; skipped" >&2
+      return 0
+    fi
     if [ -e "$target" ] && [ ! -L "$target" ]; then
       echo "link-agents: $target already exists; skipped" >&2
     elif [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then

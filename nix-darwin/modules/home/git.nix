@@ -10,6 +10,8 @@
       push.autoSetupRemote = true;
       core.editor = "nvim";
       merge.conflictstyle = "diff3";
+      # HTTPS clones push over SSH through the 1Password agent; fetches stay anonymous.
+      url."git@github.com:".pushInsteadOf = "https://github.com/";
     };
   };
 

@@ -173,5 +173,5 @@ authentication and application permissions.
 - `vscode/`, `ghostty/`: editable app settings.
 - `docs/git-workflow.md`: worktree organization and GitButler tradeoffs.
 
-The terminal background remains true black. Application settings can write into
+The terminal uses a translucent, blurred palette matched to the wallpaper (ghostty/config). Application settings can write into
 this repo through the live links; review those changes before committing.

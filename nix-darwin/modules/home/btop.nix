@@ -4,7 +4,7 @@
     enable = true;
 
     settings = {
-      # Draw on the terminal's true black instead of btop's own background.
+      # Draw on the terminal's translucent background instead of btop's own.
       theme_background = false;
       truecolor = true;
       vim_keys = true;

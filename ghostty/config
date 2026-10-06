@@ -2,10 +2,37 @@
 # Symlinked live into ~/.config/ghostty/config via nix-darwin/modules/home/ghostty.nix
 # Primary terminal palette for Ghostty and any tool that reads this file.
 #
-# Colors are Ghostty's stock palette. The only deviation is the background,
-# which is true black instead of Ghostty's #282c34.
+# "Golden Gate dusk": sampled from the macOS 27 Golden Gate wallpaper. Rock
+# shadow for the background, sunlit sky for text, the bridge for red, the
+# horizon for yellow, dusk sky for blue. The background is translucent and
+# blurred so the wallpaper shows through; it stays dark enough for contrast.
 
-background = #000000
+background = #1c1519
+foreground = #f3e6d8
+background-opacity = 0.78
+background-blur = 20
+
+cursor-color = #f2b45f
+cursor-text = #1c1519
+selection-background = #4d3640
+selection-foreground = #fbf3ea
+
+palette = 0=#2b2227
+palette = 1=#e0573f
+palette = 2=#93b38c
+palette = 3=#f2b45f
+palette = 4=#7f98c9
+palette = 5=#b893cc
+palette = 6=#80b9b6
+palette = 7=#e6d9cc
+palette = 8=#6b5a62
+palette = 9=#f47a5d
+palette = 10=#add0a4
+palette = 11=#f8ce88
+palette = 12=#a2b6e0
+palette = 13=#d0addf
+palette = 14=#a2d4cf
+palette = 15=#fbf3ea
 
 cursor-style = block
 cursor-style-blink = false

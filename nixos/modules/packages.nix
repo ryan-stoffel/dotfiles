@@ -2,6 +2,9 @@
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
+    # terminfo for SSH from Ghostty
+    ghostty.terminfo
+
     # sessions that survive disconnects
     tmux
     mosh

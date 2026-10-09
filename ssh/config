@@ -3,6 +3,11 @@
 # which is untracked; this repository is public.
 Include ~/.ssh/config.local
 
+# Forward 1Password's agent to the ThinkPad so git push works there without keys on it.
+Host thinkpad
+    User ryan-stoffel
+    ForwardAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+
 # Opt in without changing existing remotes: ssh -T github-1password
 # Enable the SSH agent in 1Password > Settings > Developer first.
 Host github-1password

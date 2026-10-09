@@ -1,4 +1,4 @@
-{ username, ... }:
+{ lib, pkgs, username, ... }:
 {
   imports = [
     ./shell.nix
@@ -15,4 +15,9 @@
     EDITOR = "nvim";
     VISUAL = "nvim";
   };
+
+  # Link shared agent instructions and skills (Mac-only settings are skipped).
+  home.activation.linkAgents = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run ${pkgs.bash}/bin/bash "$HOME/.dotfiles/scripts/link-agents.sh"
+  '';
 }

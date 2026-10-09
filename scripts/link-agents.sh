@@ -53,7 +53,8 @@ link_config "$HOME/.codex/herdr-agent-state.sh" "$src/codex/herdr-agent-state.sh
 link_config "$HOME/.codex/browser/config.toml" "$src/codex/browser/config.toml"
 link_config "$HOME/.cursor/cli-config.json" "$src/cursor/cli-config.json"
 link_config "$HOME/.cursor/argv.json" "$src/cursor/argv.json"
-link_config "$HOME/Library/Application Support/Cursor/User/settings.json" "$src/cursor/settings.json"
+[ "$(uname)" = Darwin ] &&
+  link_config "$HOME/Library/Application Support/Cursor/User/settings.json" "$src/cursor/settings.json"
 
 for dest in "$HOME/.claude/skills" "$HOME/.agents/skills" "$HOME/.cursor/skills"; do
   mkdir -p "$dest"

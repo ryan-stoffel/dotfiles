@@ -19,7 +19,7 @@
     uid = 1000;
     extraGroups = [ "wheel" "networkmanager" "docker" ];
     shell = pkgs.zsh;
-    # Public keys only. install.sh fills this from github.com/RyanStoffel.keys.
+    # Public keys only. install.sh fills this from github.com/ryan-stoffel.keys.
     openssh.authorizedKeys.keyFiles = [ ../hosts/thinkpad/authorized_keys ];
   };
 

@@ -139,7 +139,7 @@ The script checks Background Task Management (enable Nix **sh** items under
 ## Fresh machine
 
 ```sh
-git clone https://github.com/RyanStoffel/dotfiles.git ~/.dotfiles
+git clone https://github.com/ryan-stoffel/dotfiles.git ~/.dotfiles
 DOTFILES_HOST=macmini ~/.dotfiles/scripts/bootstrap.sh   # or macbook
 ```
 

@@ -42,10 +42,17 @@
     sd
     watchexec
 
+    # coding agents
+    claude-code
+    codex
+
     # languages
     python3
     uv
     nodejs_22
+    jdk21
+    maven
+    postgresql_16
 
     # dotfiles workflow
     nixpkgs-fmt

@@ -11,6 +11,9 @@
     options = "--delete-older-than 14d";
   };
 
+  # claude-code is unfree.
+  nixpkgs.config.allowUnfree = true;
+
   time.timeZone = "America/Los_Angeles";
   i18n.defaultLocale = "en_US.UTF-8";
 

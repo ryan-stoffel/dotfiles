@@ -41,6 +41,7 @@ in
       "docker-desktop"
       "claude"
       "claude-code@latest"
+      "github"
       "codex"
       "t3-code@nightly"
       "antigravity-cli"
@@ -50,6 +51,9 @@ in
       "figma"
 
       # microsoft office
+      "microsoft-word"
+      "microsoft-excel"
+      "microsoft-powerpoint"
 
       # browsers
       "zen"
@@ -58,6 +62,7 @@ in
 
       # communication
       "zoom"
+      "microsoft-teams"
       "slack"
       "vesktop"
 
@@ -91,6 +96,7 @@ in
     # `mas list` can hang on the App Store service. Already installed bundles
     # should not block unrelated rebuilds; absent apps still install via mas.
     extraConfig = ''
+      mas "Windows App", id: 1295203466 unless File.directory?("/Applications/Windows App.app")
       mas "Xcode", id: 497799835 unless File.directory?("/Applications/Xcode.app")
     '';
   };

@@ -1,8 +1,10 @@
+# Homebrew settings and apps shared by every Mac. Per-machine apps live in
+# hosts/<host>/homebrew.nix and are appended to these lists.
 { config, lib, pkgs, ... }:
 let
   user = config.system.primaryUser;
   trustJson = builtins.toJSON {
-    trustedtaps = [ "ryan-stoffel/taps" ];
+    trustedtaps = [ "ryan-stoffel/taps" "youssofal/mtplx" ];
     trustedcasks = [
       "ryan-stoffel/taps/caffeine"
       "ryan-stoffel/taps/tidy"
@@ -24,6 +26,10 @@ in
     taps = [
       {
         name = "ryan-stoffel/taps";
+        trusted = true;
+      }
+      {
+        name = "youssofal/mtplx";
         trusted = true;
       }
     ];
@@ -50,11 +56,6 @@ in
       "chatgpt"
       "figma"
 
-      # microsoft office
-      "microsoft-word"
-      "microsoft-excel"
-      "microsoft-powerpoint"
-
       # browsers
       "zen"
       "helium-browser"
@@ -62,7 +63,6 @@ in
 
       # communication
       "zoom"
-      "microsoft-teams"
       "slack"
       "vesktop"
 
@@ -91,12 +91,12 @@ in
       "mas"
       "xcodes"
       "glab"
+      "youssofal/mtplx/mtplx"
     ];
 
     # `mas list` can hang on the App Store service. Already installed bundles
     # should not block unrelated rebuilds; absent apps still install via mas.
     extraConfig = ''
-      mas "Windows App", id: 1295203466 unless File.directory?("/Applications/Windows App.app")
       mas "Xcode", id: 497799835 unless File.directory?("/Applications/Xcode.app")
     '';
   };

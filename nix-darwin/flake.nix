@@ -14,6 +14,8 @@
       system = "aarch64-darwin";
 
       # One configuration per machine. Scripts read /etc/dotfiles-host to pick theirs.
+      # Shared modules come first; hosts/<host> adds that machine's own settings
+      # and Homebrew apps. The ThinkPad (NixOS) has its own flake in ../nixos.
       mkHost = { host, username, laptop }: nix-darwin.lib.darwinSystem {
         inherit system;
         specialArgs = { inherit host username laptop; };
@@ -26,6 +28,7 @@
           ./modules/darwin/fonts.nix
           ./modules/darwin/nix-daemon.nix
           ./modules/darwin/desktop.nix
+          ./hosts/${host}
           home-manager.darwinModules.home-manager
           {
             environment.etc."dotfiles-host".text = host;

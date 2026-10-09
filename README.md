@@ -143,8 +143,11 @@ git clone https://github.com/RyanStoffel/dotfiles.git ~/.dotfiles
 DOTFILES_HOST=macmini ~/.dotfiles/scripts/bootstrap.sh   # or macbook
 ```
 
-Each machine is a `darwinConfigurations` entry in `nix-darwin/flake.nix` (username,
-laptop or desktop). The first build records the host in `/etc/dotfiles-host`, which
+Each Mac is a `darwinConfigurations` entry in `nix-darwin/flake.nix` (username,
+laptop or desktop). Shared modules apply to every Mac. `nix-darwin/hosts/<host>/`
+holds that machine's own settings, and `hosts/<host>/homebrew.nix` lists the apps
+only that machine gets (the Mac mini has the Microsoft apps, the MacBook does not).
+The first build records the host in `/etc/dotfiles-host`, which
 `rebuild` and the other scripts read afterwards. Desktop-only power settings live in
 `modules/darwin/desktop.nix`. If activation reports unexpected `/etc/bashrc` and
 `/etc/zshrc`, rename both with a `.before-nix-darwin` suffix and run `rebuild.sh` again.
@@ -165,7 +168,8 @@ authentication and application permissions.
   `scripts/link-agents.sh` links these into each app's expected location; app-managed
   skills, credentials, and session history remain in their native directories.
   Claude settings and Cursor CLI settings contain credentials, so Git ignores them.
-- `nix-darwin/`: system and Home Manager modules, pinned inputs, dev shells.
+- `nix-darwin/`: the Macs. Shared modules, per-machine `hosts/`, pinned inputs, dev shells.
+- `nixos/`: the ThinkPad dev server (NixOS), its own flake. See below.
 - `scripts/`: bootstrap, shared project launcher, health checks, dashboard, extension synchronizer.
 - `projects/`: launcher registry.
 - `raycast/`: launcher and diagnostic Script Commands.
@@ -175,3 +179,22 @@ authentication and application permissions.
 
 The terminal uses a translucent, blurred palette matched to the wallpaper (ghostty/config). Application settings can write into
 this repo through the live links; review those changes before committing.
+
+## ThinkPad (NixOS dev server)
+
+`nixos/` is a separate flake (`nixosConfigurations.thinkpad`) for a headless laptop:
+key-only SSH, Tailscale, mosh, Docker, and lid-close ignored. Layout and shell
+aliases mirror the Macs (`rebuild` runs `nixos-rebuild switch`).
+
+Install from the NixOS minimal ISO (UEFI, wired network is easiest, `nmtui` for wifi):
+
+```sh
+nix-shell -p git
+git clone https://github.com/RyanStoffel/dotfiles.git ~/.dotfiles
+sudo ~/.dotfiles/nixos/install.sh /dev/nvme0n1     # WIPES the disk; see lsblk
+```
+
+The script partitions with disko, generates `hardware-configuration.nix`, pulls your
+SSH keys from `github.com/RyanStoffel.keys`, installs, copies the repo to the new
+home, and sets your password. After first boot run `sudo tailscale up`, then commit
+the generated `hardware-configuration.nix`, `disko.nix`, and `authorized_keys`.

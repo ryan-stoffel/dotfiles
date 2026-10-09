@@ -52,4 +52,4 @@ unfocused-split-opacity = 0.8
 
 mouse-hide-while-typing = true
 
-macos-titlebar-style = tabs
+macos-titlebar-style = native

@@ -190,11 +190,11 @@ Install from the NixOS minimal ISO (UEFI, wired network is easiest, `nmtui` for 
 
 ```sh
 nix-shell -p git
-git clone https://github.com/RyanStoffel/dotfiles.git ~/.dotfiles
+git clone https://github.com/ryan-stoffel/dotfiles.git ~/.dotfiles
 sudo ~/.dotfiles/nixos/install.sh /dev/nvme0n1     # WIPES the disk; see lsblk
 ```
 
 The script partitions with disko, generates `hardware-configuration.nix`, pulls your
-SSH keys from `github.com/RyanStoffel.keys`, installs, copies the repo to the new
+SSH keys from `github.com/ryan-stoffel.keys`, installs, copies the repo to the new
 home, and sets your password. After first boot run `sudo tailscale up`, then commit
 the generated `hardware-configuration.nix`, `disko.nix`, and `authorized_keys`.

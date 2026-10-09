@@ -3,14 +3,14 @@
 #
 # 1. Boot the NixOS minimal ISO and get online (`nmtui` for wifi).
 # 2. nix-shell -p git
-# 3. git clone https://github.com/RyanStoffel/dotfiles.git ~/.dotfiles
+# 3. git clone https://github.com/ryan-stoffel/dotfiles.git ~/.dotfiles
 # 4. ~/.dotfiles/nixos/install.sh /dev/nvme0n1    (see `lsblk` for the disk)
 set -euo pipefail
 
 disk="${1:?Usage: install.sh <disk>, e.g. /dev/nvme0n1 (see lsblk)}"
 host=thinkpad
 user=ryan-stoffel
-github_user=RyanStoffel
+github_user=ryan-stoffel
 
 nixos="$(cd "$(dirname "$0")" && pwd)"
 repo="$(dirname "$nixos")"

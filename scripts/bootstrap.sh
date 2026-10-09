@@ -34,7 +34,7 @@ fi
 # 4. Clone the repo if it isn't here yet
 if [ ! -d "$REPO/.git" ]; then
   log "Cloning dotfiles..."
-  git clone https://github.com/RyanStoffel/dotfiles.git "$REPO"
+  git clone https://github.com/ryan-stoffel/dotfiles.git "$REPO"
 fi
 
 # 5. Build as the owner using the lockfile, then activate the resulting system.

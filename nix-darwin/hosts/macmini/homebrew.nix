@@ -7,6 +7,9 @@
     "microsoft-excel"
     "microsoft-powerpoint"
     "microsoft-teams"
+
+    # utilities
+    "balenaetcher"
   ];
 
   homebrew.extraConfig = ''

@@ -46,6 +46,10 @@
     claude-code
     codex
 
+    # agent sandboxing
+    bubblewrap
+    socat
+
     # languages
     python3
     uv

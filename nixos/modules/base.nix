@@ -27,4 +27,7 @@
   };
 
   programs.zsh.enable = true;
+
+  # Run prebuilt binaries (editor servers, downloaded toolchains) that expect a standard linker path.
+  programs.nix-ld.enable = true;
 }

@@ -12,6 +12,7 @@
     ./projects.nix
     ./ssh.nix
     ./layout.nix
+    ./syncthing.nix
   ];
 
   home.username = username;

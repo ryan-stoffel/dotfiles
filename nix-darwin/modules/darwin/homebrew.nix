@@ -10,6 +10,7 @@ let
       "ryan-stoffel/taps/tidy"
       "ryan-stoffel/taps/auto-peer-evals"
       "ryan-stoffel/taps/hush"
+      "ryan-stoffel/taps/photon"
     ];
   };
 in
@@ -59,7 +60,6 @@ in
       # browsers
       "zen"
       "helium-browser"
-      "photon"
 
       # communication
       "zoom"
@@ -80,6 +80,7 @@ in
       "ryan-stoffel/taps/tidy"
       "ryan-stoffel/taps/auto-peer-evals"
       "ryan-stoffel/taps/hush"
+      "ryan-stoffel/taps/photon"
       "shottr"
       "syncthing-app"
 

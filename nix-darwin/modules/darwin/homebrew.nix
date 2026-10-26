@@ -49,7 +49,7 @@ in
       "claude-code@latest"
       "github"
       "codex"
-      "t3-code@nightly"
+      "t3-code"
       "antigravity-cli"
       "cursor"
       "grok-bot"

@@ -1,4 +1,4 @@
-# MacBook: laptop, no Microsoft apps.
+# MacBook laptop configuration.
 { ... }:
 {
   imports = [ ./homebrew.nix ];

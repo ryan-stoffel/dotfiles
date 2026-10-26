@@ -11,4 +11,4 @@ fi
 system=$(nix --extra-experimental-features 'nix-command flakes' build \
   --no-write-lock-file --out-link "$repo/nix-darwin/result" --print-out-paths \
   "$repo/nix-darwin#darwinConfigurations.$host.system")
-sudo "$repo/scripts/activate.sh" "$system"
+sudo -H "$repo/scripts/activate.sh" "$system"

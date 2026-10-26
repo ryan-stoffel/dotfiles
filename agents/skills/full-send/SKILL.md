@@ -73,9 +73,8 @@ reproduction, a screenshot. Use the most direct proof the change allows:
 - Add one focused test that fails without the fix, when the behavior has none
   and the repo has a test setup.
 - For UI and runtime behavior, run the app and look at the change. Green mocked
-  tests do not prove that the user experience works. In Parallax, drive web UIs
-  with the `preview_*` tools and simulators with `device_open` and
-  `device_screenshot`, and show captures with `present_files`.
+  tests do not prove that the user experience works. Embed screenshots or GIFs
+  in the PR with the `upload-media` skill.
 
 When you cannot find a way to prove a change, you do not have full confidence.
 Ask the user.

@@ -93,9 +93,7 @@ If a review bot leaves feedback you believe is not worth addressing, reply with
 a written reason and resolve the comment. Use the `leaving-pr-comments` skill
 for every comment posted on the user's behalf.
 
-Screenshots and videos help as well. In Parallax, capture web UIs with the
-`preview_*` tools and simulators with `device_screenshot`, and show them in the
-thread with `present_files`.
+Screenshots and videos help as well. Embed them with the `upload-media` skill.
 
 Keep the PR at the size the user's goal needs. Review loops tend to grow a
 PR one cheap-looking fix at a time. Fix real bugs in the intended case.

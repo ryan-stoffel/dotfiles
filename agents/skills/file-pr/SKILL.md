@@ -33,6 +33,9 @@ GOOD
 
 > ✅ My "new worktree" default was ignored when starting new threads on existing worktrees. Super unintuitive. Now your preferences always apply.
 
+When the change is visible, embed screenshots or GIFs with the `upload-media`
+skill.
+
 End the description with the public model name and harness that made the
 changes, for example `Created with <model> in <harness>.` Include subagent
 models that wrote part of the change. Use the model name the harness reports.

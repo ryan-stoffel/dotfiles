@@ -1,53 +1,120 @@
 ---
 name: babysit-pr
-description: Babysit an open GitHub PR until it is ready to merge, fixing failed CI, conflicts, a stale branch, and review comments along the way. Use when asked to babysit, watch, or monitor a PR, or to keep at it "until merge" or "until ready to merge".
+description: Monitor a pull request through review and CI. Use when the user asks to monitor, watch, or babysit a PR.
 ---
 
-# babysit-pr
+# Babysit PR
 
-Goal: the PR is **ready**, proven by `pr_status.py` printing `verdict: READY` on the current head. Ready means open, not draft, no conflicts, not behind base, every check on the head commit passed, no unresolved review threads, and no outstanding change request. If the repo's `AGENTS.md` adds a gate (for example a review comment opening `Verdict: ready to merge`), that gate is part of ready.
+Many repos have AI review bots. They're helpful, even if they are not always
+right.
 
-`~/.dotfiles/agents/skills/babysit-pr/pr_status.py` is the one readiness check and the one fallback watcher. It uses GraphQL only, so it does not spend the shared REST quota (5,000/hour across every agent on this machine). Run it from inside the repo checkout:
+## Waiting
 
-```sh
-~/.dotfiles/agents/skills/babysit-pr/pr_status.py <number|url>            # exit 0 ready, 1 not ready, 2 read error
-~/.dotfiles/agents/skills/babysit-pr/pr_status.py <number|url> --wait     # blocks until something needs action
+Never write your own watcher, polling loop, or `sleep` loop. Use one watcher
+per PR: `watch_pull_request` in Parallax, `pr-wait` everywhere else. Never run
+both on the same PR. Every agent on Ryan's machines shares one `gh` login and
+its rate limit.
+
+### In Parallax: `watch_pull_request`
+
+Register the PR with `link_pull_request`. Read its state with
+`pull_request_status` instead of `gh pr view`, `gh pr checks`, or `gh api`.
+Handle the existing checks and comments first. Then call `watch_pull_request`
+and end your turn. Parallax wakes you with a message when a check fails, the
+required checks pass, someone comments or reviews, or the branch conflicts.
+
+- **Only the thread that owns the PR watches it.** If you are a delegated
+  child task (a reviewer, a Sol round, any `delegate_task` child), never call
+  `watch_pull_request`. The parent owns the PR. Do not watch PRs you are not
+  working on.
+- **A wake is news, not a merge decision.** Call `pull_request_status` and
+  check the merge gate yourself.
+- **Unwatch when you hand off.** A watched thread stays in Working and out of
+  the user's inbox. When you stop (ready, blocked, or asking the user a question),
+  call `unwatch_pull_request` first. A merge or close ends the watch on its
+  own.
+- **Parallax stops watching** after 8 failed reads in a row or 10
+  comment-only wakes in a row. Run `gh api rate_limit --jq .resources.graphql`
+  before you watch again. If `remaining` is near 0, wait for `reset` with one
+  background command, then watch again. Never watch again in a tight loop.
+
+### Everywhere else: `pr-wait`
+
+Wait with `pr-wait` from this skill's directory. It needs only `python3` and
+`gh`, which every machine in Ryan's dotfiles has.
+
+```bash
+~/.dotfiles/agents/skills/babysit-pr/scripts/pr-wait <pr> [--repo owner/name] [--until ready|green|any-change]
 ```
 
-## Loop
+It prints one line per real event. It exits 0 when the `--until` condition is
+met or the PR merges, 1 when it needs you (a required check failed, conflicts,
+unresolved threads, PR closed), and 2 on bad input.
 
-1. **Check.** Run `pr_status.py <pr>`. Handle every reason it prints, using the table below. Read new review threads and comments with `gh pr view <pr> --comments` and the review threads through `gh api graphql`.
-2. **Push once.** Batch every fix into one commit, run the repo's checks locally, then push. One push per round keeps CI from restarting mid-run.
-3. **Wait.** Arm exactly one watcher for the PR, then end the turn:
-   - In T3 Code: `watch_pull_request` with the PR URL. It wakes you on a failed check, required checks passing, a new comment or review, or a conflict. It does not wake on "behind base", so step 1 catches that on every wake.
-   - In Claude Code without T3: run `pr_status.py <pr> --wait` as a background Bash command with `timeout: 7200000`. Its exit wakes you. If it times out, start it again.
-   - In Codex: run `pr_status.py <pr> --wait` and keep waiting on that same session until it exits.
-4. **Wake.** Go back to step 1. A wake is news, not a verdict, so readiness comes only from `pr_status.py`.
+- `ready` (default): required checks green, Greptile or Macroscope reviewed the
+  head, and no unresolved threads. Use this to babysit.
+- `green`: required checks only. Use it when the repo has no Greptile or
+  Macroscope.
+- `any-change`: exit on the first event.
 
-Done when `pr_status.py` prints `verdict: READY`. Then:
+In Claude Code, run it with the Monitor tool (`timeout_ms: 3600000`), so each
+line wakes you. Without a monitor, run it as one long command. It ends on its
+own.
 
-- Merge only if the user asked for a merge ("until merge", "until merged", "merge"). Use the repo's merge style (squash unless `AGENTS.md` says otherwise) and keep the commit's co-author trailer.
-- In T3 Code, call `unwatch_pull_request` before handing back, so the thread returns to the user's inbox.
-- Report the PR URL, the head SHA, and the final verdict line.
+Start it again after you push, after you handle an exit 1, and after a resume.
+It remembers what it already reported, so nothing that arrived in between is
+lost. If it says another pid already watches the PR, do not start a second one.
+Kill the old one only if its events do not reach you.
 
-## Handling each reason
+With either watcher: when an event needs no action, end your turn without a
+message. Never post or say "still waiting".
 
-| `pr_status.py` reason | Action |
-| --- | --- |
-| `failing: <check>` | Read the failed job log (`gh run view <run-id> --log-failed`), reproduce locally, fix the root cause. A flaky check gets one rerun (`gh run rerun <run-id> --failed`), and a second flake becomes a reported issue, not a third rerun. |
-| `pending: ...` or `no checks reported on head yet` | Wait (step 3). Right after a push the head has no checks yet. That is pending, never green. |
-| `merge conflict with base` / `N commits behind <base>` | `git fetch origin && git rebase origin/<base>`, resolve, rerun local checks, `git push --force-with-lease`. |
-| `N unresolved review threads` / `changes requested` | Fix what is right. Reply on the thread with the commit SHA or the reason it stays as is, then resolve it (`resolveReviewThread` mutation via `gh api graphql`). Bot reviewers (Codex, Copilot) count the same as people. |
-| `PR is merged` / `PR is closed` | Stop, unwatch, and report who closed it. |
-| `draft` | Mark it ready (`gh pr ready <pr>`). The user asked for a real PR. |
-| exit 2 (read error) | Run `gh api rate_limit` once. If a quota is spent, wait until its reset (`ScheduleWakeup` in Claude Code) and then re-arm. Otherwise report the error. |
+## GitHub rate limits
 
-When T3 Code says it "stopped watching" a PR, that is the same case as exit 2: check the rate limit once, then run step 1 and re-arm.
+`gh pr create`, `gh pr view`, and `gh pr checks` use GraphQL. When GraphQL is
+used up, the REST limit is separate and usually still has room. Use
+`gh api repos/<owner>/<repo>/pulls/<n>` to read a PR, and
+`gh api repos/<owner>/<repo>/commits/<sha>/check-runs` for checks.
 
-## Watching rules
+## Reviews
 
-The watchers above already handle polling cadence, error backoff, empty check lists on a fresh push, and the head SHA. Use them as they are:
+Only act on checks and comments newer than the latest push. Verify every bot
+finding against the source before changing code. Fix real findings and CI
+failures, distinguish repository failures from infrastructure flakes, and reply
+with a written reason when dismissing false positives.
 
-- One watcher per PR, owned by the parent thread. A subagent hands its PR back to the parent to watch.
-- Status reads go through `pr_status.py`, `gh pr view`, or `gh pr checks` (GraphQL). The REST-backed commands (`gh run view`, `gh run watch`, `gh api repos/...`) are for one-off reads like a failed log, never for waiting.
-- When the same check fails three rounds in a row after fixes, or a fix needs a product decision, stop and ask the user with the failing output.
+If the repo has `.macroscope/check-run-agents/*.md`, read those rules before you
+reply to a Macroscope finding. Its findings cite them.
+
+CodeRabbit is advisory. Treat its findings like any other finding, but never
+wait for it and never hold a merge for it.
+
+If a review bot leaves feedback you believe is not worth addressing, reply with
+a written reason and resolve the comment. Use the `leaving-pr-comments` skill
+for every comment posted on the user's behalf.
+
+Screenshots and videos help as well. Embed them with the `upload-media` skill.
+
+Keep the PR at the size the user's goal needs. Review loops tend to grow a
+PR one cheap-looking fix at a time. Fix real bugs in the intended case.
+Decline the rest with a written reason, and list them as follow-ups:
+unneeded tests, guards for edge cases that do not matter, extra integration
+or compatibility, and small performance costs. Prefer the fix that deletes or
+narrows code.
+
+## Base branch and merging
+
+Keep an eye on changes to `main` and rebase when needed. `pr-wait` reports when
+new base commits touch this PR's files, and when the PR becomes BEHIND or DIRTY.
+`watch_pull_request` reports conflicts only, so read the commits behind base
+from `pull_request_status` before you call the PR ready.
+If an overlapping PR makes this one obsolete, stop monitoring, report it to the
+user, and ask before closing the PR unless closure was explicitly authorized.
+
+If nothing has changed, stay quiet rather than posting filler comments. Stop
+when `pr-wait` exits 0, or in Parallax when `pull_request_status` reports
+ready on the latest head. Merge only when the user explicitly requested it;
+otherwise report that the PR is ready. Right before a merge, run `git fetch` and
+check the PR again. Never merge when it is BEHIND or DIRTY, or when base commits
+that landed after the last green run touch this PR's files. Rebase, push, and
+wait for green again.

@@ -16,10 +16,6 @@
   "claudeCode.allowDangerouslySkipPermissions": true,
   "claudeCode.initialPermissionMode": "bypassPermissions",
 
-  // Copilot is bundled with VS Code and also claims the secondary side bar.
-  // Turning its surface off leaves Claude Code as the only chat in the window.
-  "chat.disableAIFeatures": true,
-
   "workbench.colorTheme": "GitHub Dark Default",
   "workbench.iconTheme": "material-icon-theme",
   "material-icon-theme.files.color": "#90a4ae",
@@ -45,7 +41,7 @@
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
-    "source.organizeImports": "explicit"
+    "source.organizeImports": "explicit",
   },
 
   "files.autoSave": "onFocusChange",
@@ -60,7 +56,7 @@
     "*.ts": "${capture}.js, ${capture}.d.ts, ${capture}.test.ts, ${capture}.spec.ts",
     "*.tsx": "${capture}.css, ${capture}.module.css, ${capture}.test.tsx",
     "flake.nix": "flake.lock",
-    "Cargo.toml": "Cargo.lock"
+    "Cargo.toml": "Cargo.lock",
   },
   "search.exclude": {
     "**/node_modules": true,
@@ -68,7 +64,7 @@
     "**/build": true,
     "**/.next": true,
     "**/result": true,
-    "**/*.lock": true
+    "**/*.lock": true,
   },
 
   "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font",
@@ -89,18 +85,22 @@
   "markdown-preview-enhanced.automaticallyShowPreviewOfMarkdownBeingEdited": false,
   "markdown.extension.preview.autoShowPreviewToSide": false,
   "workbench.editorAssociations": {
-    "*.copilotmd": "vscode.markdown.preview.editor"
+    "*.copilotmd": "vscode.markdown.preview.editor",
   },
   "[markdown]": {
     "editor.wordWrap": "on",
-    "editor.quickSuggestions": { "comments": "off", "strings": "off", "other": "off" }
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off",
+    },
   },
   "[nix]": { "editor.tabSize": 2 },
   "[json]": { "editor.tabSize": 2 },
   "[jsonc]": {
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
   },
   "extensions.autoUpdate": "off",
   "extensions.autoCheckUpdates": true,
-  "settingsSync.keybindingsPerPlatform": false
+  "settingsSync.keybindingsPerPlatform": false,
 }

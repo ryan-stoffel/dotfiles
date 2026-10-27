@@ -11,6 +11,7 @@ let
       "ryan-stoffel/taps/auto-peer-evals"
       "ryan-stoffel/taps/hush"
       "ryan-stoffel/taps/photon"
+      "ryan-stoffel/taps/mochi"
     ];
   };
 in
@@ -50,12 +51,13 @@ in
       "claude-code@latest"
       "github"
       "codex"
-      "t3-code"
+      # "t3-code@nightly" # cask points at a deleted release, re-enable once Homebrew bumps it
       "antigravity-cli"
       "cursor"
       "grok-bot"
       "chatgpt"
       "figma"
+      "android-studio"
 
       # browsers
       "zen"
@@ -81,11 +83,13 @@ in
       "ryan-stoffel/taps/auto-peer-evals"
       "ryan-stoffel/taps/hush"
       "ryan-stoffel/taps/photon"
+      "ryan-stoffel/taps/mochi"
       "shottr"
       "syncthing-app"
 
       # media
       "spotify"
+      "blender"
     ];
 
     brews = [
@@ -95,11 +99,13 @@ in
       "youssofal/mtplx/mtplx"
     ];
 
-    # `mas list` can hang on the App Store service. Already installed bundles
-    # should not block unrelated rebuilds; absent apps still install via mas.
-    extraConfig = ''
-      mas "Xcode", id: 497799835 unless File.directory?("/Applications/Xcode.app")
-    '';
+    # Every mas app must stay listed here. `cleanup = "uninstall"` removes any
+    # installed App Store app missing from the Brewfile.
+    masApps = {
+      "Windows App" = 1295203466;
+      "Xcode" = 497799835;
+      "Goodnotes" = 1444383602;
+    };
   };
 
   system.activationScripts.preActivation.text = lib.mkAfter ''

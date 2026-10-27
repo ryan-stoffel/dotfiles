@@ -10,9 +10,9 @@
 
     # utilities
     "balenaetcher"
-  ];
 
-  homebrew.extraConfig = ''
-    mas "Windows App", id: 1295203466 unless File.directory?("/Applications/Windows App.app")
-  '';
+    # games
+    "modrinth"
+    "minecraft"
+  ];
 }

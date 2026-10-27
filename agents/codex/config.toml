@@ -1,5 +1,5 @@
-model = "gpt-6-sol"
-model_reasoning_effort = "medium"
+model = "gpt-6.1-sol"
+model_reasoning_effort = "low"
 notify = [ "/Users/ryanstoffel/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended" ]
 service_tier = "default"
 
@@ -21,6 +21,135 @@ trust_level = "trusted"
 [projects."/Users/ryanstoffel"]
 trust_level = "trusted"
 
+[projects."/private/tmp/cx-probe/repo"]
+trust_level = "trusted"
+
+[projects."/Users/ryanstoffel/.cache/plx-e2e-282-repo"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/parallax-review-458-wlu7vR/scratch/01a0fb65-b261-7eb2-b554-c178bceb08df"]
+trust_level = "trusted"
+
+[projects."/private/tmp/rev458-probe"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/parallax-review-458-4IFCdd/scratch/01a0fb7e-9489-78a4-b166-5d0150a0ac0c"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/parallax-review-458-id75bL/scratch/01a0fb7e-dc0d-70d5-a2cc-94915b95f282"]
+trust_level = "trusted"
+
+[projects."/Users/ryanstoffel/Library/Application Support/parallax/scratch/01a0fcc5-90a0-77f4-821e-7da9f93628a3"]
+trust_level = "trusted"
+
+[projects."/Users/ryanstoffel/Developer/personal/parallax"]
+trust_level = "trusted"
+
+[projects."/private/tmp/plx370/data/scratch/01a102ff-a9d7-7c34-8542-3c47cbc50e42"]
+trust_level = "trusted"
+
+[projects."/private/tmp/plx370/data/scratch/01a102ff-c519-7144-b751-71bc0d3f1ae1"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/parallax-e2e-aOwX27/scratch/01a1030e-740b-75b6-93b9-c2b24d37e081"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/plx374-rtOP0g/parallax"]
+trust_level = "trusted"
+
+[projects."/private/tmp/plx375/e2e-repo"]
+trust_level = "trusted"
+
+[projects."/private/tmp/plx379-live/scratch/01a105bd-e632-736a-9326-e22d08f10e0e"]
+trust_level = "trusted"
+
+[projects."/private/tmp/plx379-exp/data/scratch/01a105d2-56d5-7703-b726-c6dafc8227c0"]
+trust_level = "trusted"
+
+[projects."/private/tmp/plx379-exp/data/scratch/01a105e1-82c9-7805-aa97-9a3cc7bf4ba7"]
+trust_level = "trusted"
+
+[projects."/private/tmp/plx379-exp/data/scratch/01a105e2-299e-7b10-9aef-6af839b4af93"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/plxd-rCi0cG/repos/app"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/plxd-vYQL9i/repos/app"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/plxd-J2Nbqo/repos/app"]
+trust_level = "trusted"
+
+[projects."/private/tmp/plx379-exp/data-codex/scratch/01a105f7-8c20-72dd-985c-59dd7a8a6580"]
+trust_level = "trusted"
+
+[projects."/private/tmp/plx397-demo/data/repo"]
+trust_level = "trusted"
+
+[projects."/private/tmp/plxr-54hmsc1l-repo"]
+trust_level = "trusted"
+
+[projects."/Users/ryanstoffel/Library/Application Support/parallax/scratch/01a109a3-a2c3-7112-9b55-b63f90638bde"]
+trust_level = "trusted"
+
+[projects."/Users/ryanstoffel/Library/Application Support/parallax/scratch/01a109a3-a785-7079-9090-c5814bfebfdf"]
+trust_level = "trusted"
+
+[projects."/Users/ryanstoffel/Library/Application Support/parallax/scratch/01a10e97-6bec-73d3-aa7f-3db93ec57a72"]
+trust_level = "trusted"
+
+[projects."/private/tmp/plx610-probe/live-repo"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/plx638-data-QnJ76W/scratch/01a11ed1-60c7-72a3-84e9-00f8085c0e5f"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/plx638-data-FS6CAo/scratch/01a11ed4-0608-7b71-95d8-40234f1fa5f1"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/plx638-data-lPD10J/scratch/01a11ed5-1edc-770b-a1f4-8fdd7a9cade8"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/plx638-data-0KhRBl/scratch/01a11ed6-46f4-73a2-969f-381ba1394a33"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/plx638-data-ZT7aKw/scratch/01a11ed6-e5db-703d-8cfe-d4ca36059b0d"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/plx638-data-r6iSKL/scratch/01a11ed7-50ce-733b-b8e2-2551ee327ca1"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/plx638-data-n3sfbA/scratch/01a11ed8-051b-7c44-bc0c-a9dfbbd1c757"]
+trust_level = "trusted"
+
+[projects."/private/tmp/plxf-6jfahalu-repo"]
+trust_level = "trusted"
+
+[projects."/private/tmp/plxf-yf4bcygt-repo"]
+trust_level = "trusted"
+
+[projects."/private/tmp/plxi-j4_os49m-repo"]
+trust_level = "trusted"
+
+[projects."/private/tmp/plxi-hpqvia1e-repo"]
+trust_level = "trusted"
+
+[projects."/private/tmp/plxi-c10abw2v-repo"]
+trust_level = "trusted"
+
+[projects."/Users/ryanstoffel/Library/Application Support/parallax/scratch/01a13278-1b97-7663-be2a-48348790f701"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/plx749-data-uzIeX5/scratch/01a132c2-b9da-76c0-a124-0081bc7ba8d7"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/plx749-data-PCGtaX/scratch/01a132c3-21b4-7774-b1bc-fd0d268cd643"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/vs/xsy2fvks0c5c7c60h9sg8gx40000gn/T/plx749-data-Opu9g9/scratch/01a132d1-b966-75a5-a62b-800fd4eee8b1"]
+trust_level = "trusted"
+
 [mcp_servers.brilliant]
 url = "http://127.0.0.1:3333/mcp"
 
@@ -33,6 +162,7 @@ enabled = false
 [mcp_servers.node_repl]
 args = []
 command = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node_repl"
+env_vars = ["BROWSER_USE_ACCESS_EXECUTOR_ID", "BROWSER_USE_ACCESS_PIPE_PATH", "BROWSER_USE_ACCESS_VERIFYING_IDENTITY"]
 startup_timeout_sec = 120
 
 [mcp_servers.node_repl.env]
@@ -47,8 +177,8 @@ NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunc
 NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
 NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = "Control desktop apps on macOS through Computer Use."
 BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
-BROWSER_USE_CODEX_APP_VERSION = "26.928.31416"
-NODE_REPL_TRUSTED_SERVICES = '{"browser":"/Users/ryanstoffel/.codex/plugins/cache/openai-bundled/browser/26.928.31416/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
+BROWSER_USE_CODEX_APP_VERSION = "26.1016.51333"
+NODE_REPL_TRUSTED_SERVICES = '{"browser":"/Users/ryanstoffel/.codex/plugins/cache/openai-bundled/browser/26.1016.51333/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
 SKY_CUA_SERVICE_PATH = "/Users/ryanstoffel/.codex/computer-use/Codex Computer Use.app"
 CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex"
 
@@ -58,24 +188,26 @@ enabled = false
 
 [features]
 hooks = true
+memories = true
 
 [tui]
 screen_reader_detection_done = true
 
 [tui.model_availability_nux]
 gpt-6-astra = 1
-"gpt-6.1-sol" = 1
+"gpt-6.1-sol" = 4
 
 [desktop]
 followUpQueueMode = "steer"
 conversationDetailMode = "STEPS_COMMANDS"
 ambient-suggestions-enabled = false
 external-agent-import-sync-item-types = "all"
-external-agent-import-sync-enabled = true
+external-agent-import-sync-enabled = false
 appearanceDarkCodeThemeId = "vscode-plus"
-dock-icon-preference = "codex-system"
+dock-icon-preference = "app-default"
 usePointerCursors = true
 appearanceDiffMarkerStyle = "symbols"
+agent-usage-reset-enabled = true
 
 [desktop.appearanceDarkChromeTheme]
 accent = "#007acc"
@@ -159,14 +291,24 @@ enabled = true
 [plugins."ponytail@ponytail"]
 enabled = true
 
+[hooks.state]
+
 [hooks.state."/Users/ryanstoffel/.codex/hooks.json:session_start:0:0"]
 trusted_hash = "sha256:36a2c44ebdf0e2b28a8208fa07d692aad47efe66b6458fe1d1dd5df68b4467b0"
 
 [hooks.state."ponytail@ponytail:hooks/claude-codex-hooks.json:session_start:0:0"]
-trusted_hash = "sha256:5f81d38f47448a1581c08ec877e044d9e04dd6f814dce3f2671f7a8edadd719b"
+trusted_hash = "sha256:55a39116e94ed8399271043701d3e9b8859aee77c30ef85529e7eab067d8acd9"
 
 [hooks.state."ponytail@ponytail:hooks/claude-codex-hooks.json:user_prompt_submit:0:0"]
-trusted_hash = "sha256:6a6f42bc3b58d6262db38bfd74d7f340fcca2b09cdb134aad365063f0bfefca4"
+trusted_hash = "sha256:29dcb3bf3cd3d77af301058521d2fd4e414c523345f8fe70942f7f30027acc94"
 
 [hooks.state."ponytail@ponytail:hooks/claude-codex-hooks.json:subagent_start:0:0"]
-trusted_hash = "sha256:1423b56c1322f96c8f74c51c1e7ae9a047b904c1fa43ee9165d462fd7a6e70ef"
+trusted_hash = "sha256:6e210f506560ddd14e490c7dd80623572d504b8f0cfcf8c64c4d4c2ab4d23ae1"
+
+[memories]
+generate_memories = true
+use_memories = true
+
+[mcp_servers.study-stash]
+command = "/Applications/Study Stash.app/Contents/MacOS/StudyStash"
+args = ["mcp", "--client", "codex"]

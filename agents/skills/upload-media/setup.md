@@ -14,6 +14,8 @@ Connect a dedicated custom domain to the bucket and wait for it to become active
 Use a hostname with no existing service. The `r2.dev` development endpoint is
 rate limited and is not intended for production use. See
 [public buckets](https://developers.cloudflare.com/r2/buckets/public-buckets/).
+Cloudflare may return HTTP 403 with error 1014 while ownership or TLS is pending.
+Check `wrangler r2 bucket domain get pr-media --domain <hostname>` before retrying.
 
 Create `~/.config/pr-media/r2.env` on each upload machine:
 

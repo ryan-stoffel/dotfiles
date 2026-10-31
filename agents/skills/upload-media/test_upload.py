@@ -107,13 +107,13 @@ class UploadTest(unittest.TestCase):
         put = self.commands()[0]
         self.assertEqual(put[put.index("--content-type") + 1], "video/mp4")
 
-    def test_private_configuration_stops_before_upload(self):
+    def test_empty_public_url_stops_before_upload(self):
         with self.config.open("a") as f:
             f.write("R2_PUBLIC_URL=''\n")
         result = self.upload()
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(result.stdout, "")
-        self.assertIn("R2 media is private", result.stderr)
+        self.assertIn("configure R2_PUBLIC_URL", result.stderr)
         self.assertEqual(self.commands(), [])
 
 

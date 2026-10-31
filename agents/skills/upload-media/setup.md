@@ -1,7 +1,9 @@
-# Private R2 setup
+# R2 media setup
 
-Ryan's `pr-media` bucket must remain private. Keep both custom-domain access and
-`r2.dev` access disabled. Existing Gists and their files remain unchanged.
+Media is served publicly at `https://files.stoffel-thomas-ryan.workers.dev`.
+The `files` Worker serves GET/HEAD requests from the `pr-media` R2 bucket,
+without a directory listing or public uploads. Direct R2 custom-domain and
+`r2.dev` access remain disabled.
 
 Each upload machine needs Node.js/npm and a Cloudflare login:
 
@@ -9,25 +11,31 @@ Each upload machine needs Node.js/npm and a Cloudflare login:
 npx --yes wrangler@4.156.0 login
 ```
 
-Enable R2 in the Cloudflare dashboard and use Standard storage. R2 requires
-billing setup; usage beyond the account's free allowance is billed. See
-[R2 pricing](https://developers.cloudflare.com/r2/pricing/).
-
-The local `~/.config/pr-media/r2.env` contains no credentials:
+Its `~/.config/pr-media/r2.env` contains no credentials:
 
 ```bash
 CLOUDFLARE_ACCOUNT_ID='<account ID from wrangler whoami>'
 R2_BUCKET='pr-media'
-R2_PUBLIC_URL=''
+R2_PUBLIC_URL='https://files.stoffel-thomas-ryan.workers.dev'
 ```
 
-Wrangler stores its login separately. The empty public URL intentionally stops
-`upload.sh` before any upload. `PR_MEDIA_CONFIG` can select another configuration
-file. An authenticated sharing workflow is required before private media can be
-shared with PR reviewers. Public access must stay disabled during that setup.
+Wrangler stores its login separately. `PR_MEDIA_CONFIG` can select another
+configuration file. Verify setup by uploading a non-sensitive screenshot and
+opening the returned URL.
 
-The `pr-media-private` Worker denies requests to `pr-media.parallax.codes/*`,
-including previously cached synthetic test files. The domain is disconnected
-from R2. Retain this guard until those cached URLs are purged or otherwise
-inaccessible. See [R2 access controls](https://developers.cloudflare.com/r2/buckets/public-buckets/#access-control).
-Its source is `private-guard.js`, with deployment settings in `wrangler.private.json`.
+To deploy the read-only host after changing `media-worker.mjs`:
+
+```bash
+. ~/.config/pr-media/r2.env
+export CLOUDFLARE_ACCOUNT_ID
+npx --yes wrangler@4.156.0 deploy --config ~/.dotfiles/agents/skills/upload-media/wrangler.json
+```
+
+The account shares R2's free allowance and Workers' free request allowance.
+Excess R2 usage is billed. See [R2 pricing](https://developers.cloudflare.com/r2/pricing/)
+and [Workers limits](https://developers.cloudflare.com/workers/platform/limits/).
+
+Existing Gists remain unchanged. `pr-media.parallax.codes` is disconnected from
+R2. Its `pr-media-private` Worker blocks old cached URLs; retain that guard until
+they are purged or otherwise inaccessible. Its source and deployment settings
+are `private-guard.js` and `wrangler.private.json`.

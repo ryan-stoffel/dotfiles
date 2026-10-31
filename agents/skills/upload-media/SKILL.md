@@ -28,27 +28,30 @@ Read and confirm it shows what you claim before uploading.
 
 ## Upload
 
-Every upload is public and permanent: the gist is unlisted, but anyone with a
-link can open it. Never upload secrets, credentials, private URLs, private logs,
-or anything outside the change.
+Every upload is public. Never upload secrets, credentials, private URLs, private
+logs, or anything outside the change.
 
 ```bash
 ~/.dotfiles/agents/skills/upload-media/upload.sh shot.png "Settings page after the fix"
 ```
 
-It commits the file to Ryan's secret media gist with the `gh` login (another
-gist's ID in `MEDIA_GIST_ID` or `~/.config/pr-media/gist-id` overrides it), and
-prints one Markdown line. It works for any repository. Paste that line into the
-PR body as is. Images print as `![...](url)` so GitHub renders them. Videos
-print as a link, because GitHub does not play externally hosted video, so embed
-a GIF preview above the video link.
+It uploads directly to Cloudflare R2 using Wrangler's Cloudflare login and
+`~/.config/pr-media/r2.env`. Node.js/npm must be installed. The script checks
+the public URL before printing one Markdown line. Paste that line into the PR
+body as is. Images print as `![...](url)` so GitHub renders them. Videos print
+as a link, so embed a GIF preview above the video link.
+
+Object names include the file's SHA-256 hash. Re-uploading the same file uses
+the same URL; changed files get new URLs. Existing Gist media stays in place
+so older PR links keep working.
 
 Files must be under 5,000,000 bytes. If a file is larger, lower the GIF's `fps`
 or `scale` and try again. If the upload fails, report the error to Ryan. Never
 upload somewhere else without permission, and never commit media to a branch of
-the repository.
+the repository. If R2 is not configured, follow [R2 setup](setup.md).
 
 ## Embed
 
-Put the lines under a `## Validation` section in the PR body. Read the body back
-with `gh pr view <n> --json body` and confirm each image line starts with `![`.
+Put the lines under a `## Validation` section in the PR body. In Parallax, use
+`pull_request_edit` and read back with `pull_request_status`; elsewhere, use
+`gh pr edit` and `gh pr view <n> --json body`. Confirm each image renders.

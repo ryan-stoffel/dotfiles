@@ -28,27 +28,18 @@ Read and confirm it shows what you claim before uploading.
 
 ## Upload
 
-Every upload is public. Never upload secrets, credentials, private URLs, private
-logs, or anything outside the change.
+Ryan requires R2 media to remain private. The bucket's custom domain and
+`r2.dev` access are disabled. Keep captures local until authenticated sharing is
+configured. Do not enable public access or use another host to make a PR embed
+work without Ryan's permission.
 
-```bash
-~/.dotfiles/agents/skills/upload-media/upload.sh shot.png "Settings page after the fix"
-```
+The R2 uploader is `upload.sh` in this folder. Its public-link mode is disabled
+by an empty `R2_PUBLIC_URL` in `~/.config/pr-media/r2.env`, so it stops before
+uploading. Private R2 URLs cannot render directly in GitHub PR descriptions.
+See [R2 setup](setup.md) for the account configuration.
 
-It uploads directly to Cloudflare R2 using Wrangler's Cloudflare login and
-`~/.config/pr-media/r2.env`. Node.js/npm must be installed. The script checks
-the public URL before printing one Markdown line. Paste that line into the PR
-body as is. Images print as `![...](url)` so GitHub renders them. Videos print
-as a link, so embed a GIF preview above the video link.
-
-Object names include the file's SHA-256 hash. Re-uploading the same file uses
-the same URL; changed files get new URLs. Existing Gist media stays in place
-so older PR links keep working.
-
-Files must be under 5,000,000 bytes. If a file is larger, lower the GIF's `fps`
-or `scale` and try again. If the upload fails, report the error to Ryan. Never
-upload somewhere else without permission, and never commit media to a branch of
-the repository. If R2 is not configured, follow [R2 setup](setup.md).
+Existing secret Gists remain unchanged. Secret Gist URLs are unlisted and can
+be opened by anyone who has the URL.
 
 ## Embed
 

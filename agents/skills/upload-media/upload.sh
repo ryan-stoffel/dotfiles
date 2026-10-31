@@ -26,7 +26,7 @@ config="${PR_MEDIA_CONFIG:-$HOME/.config/pr-media/r2.env}"
 [ ! -r "$config" ] || . "$config"
 : "${CLOUDFLARE_ACCOUNT_ID:?upload: configure CLOUDFLARE_ACCOUNT_ID in ~/.config/pr-media/r2.env}"
 : "${R2_BUCKET:?upload: configure R2_BUCKET in ~/.config/pr-media/r2.env}"
-: "${R2_PUBLIC_URL:?upload: configure R2_PUBLIC_URL in ~/.config/pr-media/r2.env}"
+: "${R2_PUBLIC_URL:?upload: public PR embeds are disabled while R2 media is private}"
 [[ "$CLOUDFLARE_ACCOUNT_ID" =~ ^[a-f0-9]{32}$ ]] || { echo "upload: invalid Cloudflare account ID" >&2; exit 1; }
 [[ "$R2_BUCKET" =~ ^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$ ]] || { echo "upload: invalid R2 bucket name" >&2; exit 1; }
 R2_PUBLIC_URL="${R2_PUBLIC_URL%/}"

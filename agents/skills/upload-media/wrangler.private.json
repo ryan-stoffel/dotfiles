@@ -1,0 +1,13 @@
+{
+  "name": "pr-media-private",
+  "main": "private-guard.js",
+  "compatibility_date": "2026-10-31",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "pr-media.parallax.codes/*",
+      "zone_name": "parallax.codes"
+    }
+  ]
+}

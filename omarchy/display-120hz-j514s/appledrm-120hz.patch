@@ -1,0 +1,62 @@
+diff -ru a/drivers/gpu/drm/apple/iomfb_v14_7.c b/drivers/gpu/drm/apple/iomfb_v14_7.c
+--- a/drivers/gpu/drm/apple/iomfb_v14_7.c	2026-11-05 15:32:34.605522513 -0800
++++ b/drivers/gpu/drm/apple/iomfb_v14_7.c	2026-11-05 15:32:34.606249345 -0800
+@@ -96,6 +96,16 @@
+ #define DCP_V14_LAYER		0
+ #define DCP_V14_BLACK		0xff000000
+ 
++/*
++ * Report the flip before the swap reaches the firmware. The next commit still waits for this
++ * swap (v14->lock), and a 3-buffer swapchain renders into the buffer from two flips back, which is
++ * already off screen. Saves the ~2.75 ms A407 round trip from the compositor's frame loop.
++ * Ported from omacom/linux-aurora#31 for local testing.
++ */
++static bool t6030_early_flip;
++module_param(t6030_early_flip, bool, 0644);
++MODULE_PARM_DESC(t6030_early_flip, "T6030 built-in panel: send the flip event before the swap (test, default off)");
++
+ static const struct dcp_v14_board dcp_v14_board_t6030 = {
+ 	.name = "T6030",
+ 	.debugfs = "dcp-t6030",
+@@ -104,6 +114,7 @@
+ 	.handoff = "apple,t6030-handoff",
+ 	.promotion = true,
+ 	.panel_nits = true,
++	.swap_timestamps = true,
+ };
+ 
+ /*
+@@ -3357,6 +3368,12 @@
+ 	if (!dcp->external)
+ 		dcp_v14_configure_backlight(dcp);
+ 	dcp->swap_start = ktime_get();
++	if (fb && dcp->v14 && !dcp->external && dcp->v14->board == &dcp_v14_board_t6030 &&
++	    READ_ONCE(t6030_early_flip)) {
++		dcp_drm_crtc_page_flip(dcp, ktime_get());
++		dcp_v14_present(dcp->v14, fb, fb->width, fb->height, dcp->notch_height, cs);
++		return;
++	}
+ 	if (dcp->v14 && dcp_v14_present(dcp->v14, fb,
+ 					 fb ? (dcp->external ? p->src_w >> 16 : fb->width) : 0,
+ 					 fb ? (dcp->external ? p->src_h >> 16 : fb->height) : 0,
+diff -ru a/drivers/gpu/drm/apple/v14-board-test.c b/drivers/gpu/drm/apple/v14-board-test.c
+--- a/drivers/gpu/drm/apple/v14-board-test.c	2026-11-05 15:32:34.606961244 -0800
++++ b/drivers/gpu/drm/apple/v14-board-test.c	2026-11-05 15:32:34.607484424 -0800
+@@ -197,14 +197,14 @@
+ 
+ 	KUNIT_EXPECT_TRUE(test, j516c_b->swap_timestamps);
+ 	KUNIT_EXPECT_FALSE(test, j514c_b->swap_timestamps);
+-	KUNIT_EXPECT_FALSE(test, t6030_b->swap_timestamps);
++	KUNIT_EXPECT_TRUE(test, t6030_b->swap_timestamps);
+ 	KUNIT_EXPECT_FALSE(test, j613_b->swap_timestamps);
+ 
+ 	KUNIT_EXPECT_TRUE(test, dcp_v14_board_stamps_swaps(j516c_b, false));
+-	/* The J514C, the external role, the T6030 (J514S, J516S) and T8122 panels, no record. */
++	KUNIT_EXPECT_TRUE(test, dcp_v14_board_stamps_swaps(t6030_b, false));
++	/* The J514C, the external role, the T8122 panels, no record. */
+ 	KUNIT_EXPECT_FALSE(test, dcp_v14_board_stamps_swaps(j514c_b, false));
+ 	KUNIT_EXPECT_FALSE(test, dcp_v14_board_stamps_swaps(j516c_b, true));
+-	KUNIT_EXPECT_FALSE(test, dcp_v14_board_stamps_swaps(t6030_b, false));
+ 	KUNIT_EXPECT_FALSE(test, dcp_v14_board_stamps_swaps(j613_b, false));
+ 	KUNIT_EXPECT_FALSE(test, dcp_v14_board_stamps_swaps(NULL, false));
+ 	KUNIT_EXPECT_FALSE(test, dcp_v14_board_stamps_swaps(NULL, true));

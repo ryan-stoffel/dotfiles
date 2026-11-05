@@ -1,0 +1,162 @@
+diff --git a/arch/arm64/boot/dts/apple/t6030-j514s.dts b/arch/arm64/boot/dts/apple/t6030-j514s.dts
+index 61c929da..cf06fa80 100644
+--- a/arch/arm64/boot/dts/apple/t6030-j514s.dts
++++ b/arch/arm64/boot/dts/apple/t6030-j514s.dts
+@@ -18,6 +18,10 @@ / {
+ 	compatible = "apple,j514s", "apple,t6030", "apple,arm-platform";
+ 	model = "Apple MacBook Pro (14-inch, M3 Pro, Nov 2023)";
+ 
++	aliases {
++		sep = &sep;
++	};
++
+ 	chosen {
+ 		asahi,t6030-dispext = "1";
+ 	};
+@@ -97,3 +101,22 @@ &sound {
+ &isp {
+ 	apple,platform-id = <16>;
+ };
++
++/*
++ * Mesa fingerprint sensor on spi2 (J514s ADT /arm-io/spi2/mesa): power on
++ * NUB GPIO 33, active high. The data-ready line (AP GPIO 200) is left out,
++ * so the driver polls until its trigger is confirmed. Native chip select
++ * only. The ADT's sensor (R3), SPI reg bytes and 8 MHz clock match J613's.
++ */
++&spi2 {
++	status = "okay";
++};
++
++&mesa {
++	status = "okay";
++	enable-gpios = <&pinctrl_nub 33 GPIO_ACTIVE_HIGH>;
++	spi-cs-setup-delay-ns = <20>;
++	spi-cs-hold-delay-ns = <20>;
++	/* Per-device factory data from this Mac's own iBoot system container. */
++	firmware-name = "apple/mesacal-j514s.bin";
++};
+diff --git a/arch/arm64/boot/dts/apple/t6030.dtsi b/arch/arm64/boot/dts/apple/t6030.dtsi
+index 56e3da67..38879d1c 100644
+--- a/arch/arm64/boot/dts/apple/t6030.dtsi
++++ b/arch/arm64/boot/dts/apple/t6030.dtsi
+@@ -576,6 +576,67 @@ spi1: spi@289104000 {
+ 			status = "disabled";
+ 		};
+ 
++		/* J514s ADT /arm-io/spi2 (0x79108000, IRQ 876), as on T8122. */
++		spi2: spi@289108000 {
++			compatible = "apple,t6030-spi", "apple,t8103-spi";
++			reg = <0x2 0x89108000 0x0 0x4000>;
++			interrupt-parent = <&aic>;
++			interrupts = <AIC_IRQ 876 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&clk_200m>;
++			power-domains = <&ps_spi2>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++			status = "disabled";
++
++			mesa: fingerprint@0 {
++				compatible = "apple,mesa-fingerprint";
++				reg = <0>;
++				spi-max-frequency = <8000000>;
++				spi-cpha;
++				status = "disabled";
++			};
++		};
++
++		/*
++		 * iBoot hands over a running SEP. Keep Linux off its DART at boot;
++		 * apple_sep enables it at module initialization. The J514s ADT
++		 * matches T8122: same SEP, DART and mailbox addresses, the same
++		 * ascwrap-v6 SEP, and the BIT(40) DART window (vm-base
++		 * 0x10000004000). Only the interrupts differ.
++		 */
++		sep_dart: iommu@29cac0000 {
++			compatible = "apple,t6030-dart", "apple,t8110-dart";
++			reg = <0x2 0x9cac0000 0x0 0x4000>;
++			interrupt-parent = <&aic>;
++			interrupts = <AIC_IRQ 372 IRQ_TYPE_LEVEL_HIGH>;
++			#iommu-cells = <1>;
++			apple,dma-range = /bits/ 64 <0x10000004000 0xffff0000>;
++			apple,dma-offset = /bits/ 64 <0x0>;
++			status = "disabled";
++		};
++
++		sep: sep@29e400000 {
++			compatible = "apple,sep";
++			reg = <0x2 0x9e400000 0x0 0x6c000>;
++			mboxes = <&sep_mbox>;
++			mbox-names = "mbox";
++			iommus = <&sep_dart 0>;
++			status = "disabled";
++		};
++
++		sep_mbox: mbox@29e408000 {
++			compatible = "apple,t6030-asc-mailbox", "apple,asc-mailbox-v4";
++			reg = <0x2 0x9e408000 0x0 0x4000>;
++			interrupt-parent = <&aic>;
++			interrupts = <AIC_IRQ 366 IRQ_TYPE_LEVEL_HIGH>,
++				<AIC_IRQ 367 IRQ_TYPE_LEVEL_HIGH>,
++				<AIC_IRQ 368 IRQ_TYPE_LEVEL_HIGH>,
++				<AIC_IRQ 369 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "send-empty", "send-not-empty",
++				"recv-empty", "recv-not-empty";
++			#mbox-cells = <0>;
++		};
++
+ 		sio_dart: iommu@289004000 {
+ 			compatible = "apple,t6030-dart", "apple,t8110-dart";
+ 			reg = <0x2 0x89004000 0x0 0x4000>;
+diff --git a/drivers/soc/apple/profile.rs b/drivers/soc/apple/profile.rs
+index 6803c146..58de1c5b 100644
+--- a/drivers/soc/apple/profile.rs
++++ b/drivers/soc/apple/profile.rs
+@@ -24,6 +24,7 @@
+ //!   a powered sensor, so the driver uses the warm registration path.
+ //! * `T8122` / J613, J615 (MacBook Air, M3): the T8112 warm registration with
+ //!   the T8140 SEP DART aperture above 4 GiB.
++//! * `T6030` / J514s (MacBook Pro 14", M3 Pro): T8122 with spi2 moved.
+ 
+ // The boot handshake, identity source, sensor and DART fields are consumed by
+ // the boot-endpoint, identity and sensor-transport paths.
+@@ -425,6 +426,20 @@ pub(crate) struct PlatformProfile {
+     ..T8112
+ };
+ 
++/// MacBook Pro 14" M3 Pro (J514s). The J514s ADT (27.0, 26A428) wires the
++/// SEP as J613's does: `iop-sep,ascwrap-v6` at the same address, the same DART
++/// window with the BIT(40) alias, and the same Mesa sensor (`R3`, identical
++/// `reg` bytes, 8 MHz, chip select 0) with power on NUB GPIO (pin 33). Only
++/// spi2 moves, to `0x289108000`. Otherwise [`T8122`]. Unproven on hardware.
++pub(crate) const T6030: PlatformProfile = PlatformProfile {
++    name: "T6030/J514s",
++    sensor: SensorProfile {
++        controller_base: 0x2_8910_8000,
++        ..T8122.sensor
++    },
++    ..T8122
++};
++
+ static_assert!(T8103.shmem_capacity == 0x30000);
+ static_assert!(T6020.shmem_capacity == 0x40000);
+ static_assert!(T8140.shmem_capacity == 0x40000);
+@@ -440,6 +455,7 @@ pub(crate) struct PlatformProfile {
+ static_assert!(T8122.shmem_capacity == T8112.shmem_capacity);
+ static_assert!(T8122.sensor.controller_base == 0x2a1108000);
+ static_assert!(T8122.wide_dma_mask);
++static_assert!(T6030.sensor.controller_base == 0x289108000);
+ 
+ /// Whether the machine root declares `compatible`.
+ ///
+@@ -586,6 +602,10 @@ pub(crate) fn detect() -> Result<&'static PlatformProfile> {
+     if machine_has(b"apple,t8122") && (machine_has(b"apple,j613") || machine_has(b"apple,j615")) {
+         return Ok(&T8122);
+     }
++    // Only J514s's ADT was read; J516s shares the SoC but is unchecked.
++    if machine_has(b"apple,t6030") && machine_has(b"apple,j514s") {
++        return Ok(&T6030);
++    }
+     Err(ENODEV)
+ }
+ 

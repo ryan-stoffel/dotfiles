@@ -170,6 +170,7 @@ authentication and application permissions.
   Claude settings and Cursor CLI settings contain credentials, so Git ignores them.
 - `nix-darwin/`: the Macs. Shared modules, per-machine `hosts/`, pinned inputs, dev shells.
 - `nixos/`: the ThinkPad dev server (NixOS), its own flake. See below.
+- `omarchy/`: the Omarchy MacBook (M3 Pro): Touch ID kernel patch and scripts.
 - `scripts/`: bootstrap, shared project launcher, health checks, dashboard, extension synchronizer.
 - `projects/`: launcher registry.
 - `raycast/`: launcher and diagnostic Script Commands.

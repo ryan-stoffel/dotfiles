@@ -8,7 +8,6 @@
     ./ghostty.nix
     ./btop.nix
     ./bat.nix
-    ./vesktop.nix
     ./projects.nix
     ./ssh.nix
     ./layout.nix

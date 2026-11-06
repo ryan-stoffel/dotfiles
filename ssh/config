@@ -8,6 +8,13 @@ Host thinkpad
     User ryan-stoffel
     ForwardAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 
+# Offer only this key. The 1Password agent's keys trip the mini's MaxAuthTries first.
+Host mac-mini
+    HostName ryans-mac-mini
+    User ryan-stoffel
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+
 # Opt in without changing existing remotes: ssh -T github-1password
 # Enable the SSH agent in 1Password > Settings > Developer first.
 Host github-1password

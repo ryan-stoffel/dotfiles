@@ -31,6 +31,7 @@ home_paths=(
   .config/omarchy/branding/about.txt
   .config/omarchy/branding/screensaver.txt
   .config/omarchy/plugins/ryan-stoffel-apple-menu
+  .config/omarchy/plugins/ryan-stoffel.audio
   .config/omarchy/plugins/ryan-stoffel.clock
   .config/omarchy/plugins/ryan-stoffel.full-gaps
   .config/omarchy/plugins/ryan-stoffel.lock

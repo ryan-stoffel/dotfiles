@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "ryan-stoffel.sudo-touchid",
+  "name": "Touch ID for sudo",
+  "version": "1.0.0",
+  "author": "ryan-stoffel",
+  "description": "Shows a Touch ID card while sudo waits for a fingerprint.",
+  "kinds": [
+    "service"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "service": "Service.qml"
+  }
+}

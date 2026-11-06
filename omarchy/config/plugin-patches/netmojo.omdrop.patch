@@ -1,0 +1,1672 @@
+base: https://github.com/netmojo-systems/omdrop-plugin.git 0ac99a8c469e67a3fd15934d985fe0de0cc8abb0
+diff --git a/OmdropIcon.qml b/OmdropIcon.qml
+index 7e344af..9c38c03 100644
+--- a/OmdropIcon.qml
++++ b/OmdropIcon.qml
+@@ -3,11 +3,9 @@ import QtQuick.Shapes
+ import qs.Commons
+ import qs.Commons as Commons
+ 
+-// A drop: a triangle pointing down into the box it lands in. Nothing in a Nerd
+-// Font draws this, and an SVG asset would not follow the bar's foreground
+-// colour, so it is a Shape authored on a 24 grid and scaled to whatever the
+-// caller asks for. The triangle is filled so it keeps its weight beside the
+-// bar's glyph icons at 12 px, where a stroked outline thins to a hairline.
++// The AirDrop mark. Nothing in a Nerd Font draws it, and an SVG asset would not
++// follow the bar's foreground colour, so it is a Shape authored on a 24 grid
++// and scaled to whatever the caller asks for.
+ Item {
+   id: root
+ 
+@@ -53,24 +51,17 @@ Item {
+       NumberAnimation { to: 0; duration: 950; easing.type: Easing.InSine }
+     }
+ 
++    // The AirDrop mark: MingCute "airdrop-fill" (Apache-2.0,
++    // https://github.com/Richard9394/MingCute). CurveRenderer draws it
++    // antialiased at any scale; the default renderer left it jagged and blurry.
+     Shape {
+       anchors.fill: parent
++      preferredRendererType: Shape.CurveRenderer
+ 
+       ShapePath {
+-        strokeColor: root.color
++        strokeColor: "transparent"
+         fillColor: root.color
+-        strokeWidth: 1.7
+-        joinStyle: ShapePath.RoundJoin
+-        PathSvg { path: "M1.5 3.5h21L12 13.5z" }
+-      }
+-
+-      ShapePath {
+-        strokeColor: root.color
+-        fillColor: "transparent"
+-        strokeWidth: 1.7
+-        capStyle: ShapePath.RoundCap
+-        joinStyle: ShapePath.RoundJoin
+-        PathSvg { path: "M8 16h8v5.5H8z" }
++        PathSvg { path: "M12.761 1.528c1.58.1 3.119.599 4.491 1.379a10.1 10.1 0 0 1 2.475 1.985c3.402 3.75 3.701 9.223.732 13.328a10.2 10.2 0 0 1-3.092 2.805c-.167.097-.661.392-.928.468c-1.199.344-2.277-.865-1.798-2.017c.237-.57.731-.751 1.227-1.05c.5-.302.965-.663 1.383-1.072a7.56 7.56 0 0 0 2.159-6.516c-.807-5.198-6.651-7.974-11.194-5.314c-3.832 2.244-4.894 7.379-2.234 10.951a7.6 7.6 0 0 0 1.661 1.629c.606.433 1.414.644 1.716 1.372c.479 1.152-.599 2.361-1.798 2.017c-.267-.076-.761-.371-.928-.468a10.5 10.5 0 0 1-1.336-.944C2.031 17.416.681 12.78 2.005 8.778c1.536-4.643 5.88-7.558 10.756-7.25m-.174 4c1.066.082 2.093.468 2.987 1.044c3.288 2.118 3.848 6.632 1.401 9.61a6.2 6.2 0 0 1-2 1.597c-.859.424-1.889.085-2.176-.877a1.5 1.5 0 0 1 .046-.99c.248-.614.824-.777 1.306-1.153a3.5 3.5 0 0 0 .9-1.046c1.305-2.32-.398-5.211-3.051-5.211s-4.356 2.891-3.051 5.211c.227.403.535.761.9 1.046c.482.376 1.058.539 1.306 1.153c.466 1.157-.625 2.355-1.82 1.998c-.582-.173-1.316-.746-1.766-1.156c-1.987-1.81-2.563-4.747-1.585-7.216c1.056-2.663 3.787-4.228 6.603-4.01m-.186 4.008c2.469.429 2.852 3.801.544 4.775a2.46 2.46 0 0 1-1.346.153c-2.469-.429-2.852-3.801-.544-4.775a2.46 2.46 0 0 1 1.346-.153" }
+       }
+ 
+       // Struck through while the radio support is missing. Kept as its own
+diff --git a/Panel.qml b/Panel.qml
+index 42a18a8..2753c45 100644
+--- a/Panel.qml
++++ b/Panel.qml
+@@ -1,5 +1,6 @@
+ import QtQuick
+ import QtQuick.Layouts
++import QtQuick.Shapes
+ import Quickshell
+ import Quickshell.Io
+ import qs.Commons
+@@ -31,53 +32,6 @@ Panel {
+   implicitWidth: button.implicitWidth
+   implicitHeight: button.implicitHeight
+ 
+-  // One of the Everyone / Contacts Only tabs. The chosen one is lit; the
+-  // other stays dark until hovered, when it brightens to say it can be clicked.
+-  component AudienceTab: Item {
+-    id: tab
+-    property string glyph
+-    property string label
+-    property bool selected
+-    signal chosen()
+-
+-    implicitWidth: tabRow.implicitWidth
+-    implicitHeight: tabRow.implicitHeight
+-
+-    readonly property bool hovered: tabMouse.containsMouse && !selected
+-    readonly property color tint: selected ? root.foreground
+-                                  : hovered ? Qt.darker(root.foreground, 1.4)
+-                                  : Qt.darker(root.foreground, 2.0)
+-
+-    Row {
+-      id: tabRow
+-      spacing: Style.space(6)
+-      Text {
+-        text: tab.glyph
+-        color: tab.tint
+-        font.family: root.fontFamily
+-        font.pixelSize: Style.font.bodySmall
+-        anchors.verticalCenter: parent.verticalCenter
+-      }
+-      Text {
+-        text: tab.label
+-        color: tab.tint
+-        font.family: root.fontFamily
+-        font.pixelSize: Style.font.caption
+-        font.bold: true
+-        font.letterSpacing: 1.2
+-        anchors.verticalCenter: parent.verticalCenter
+-      }
+-    }
+-
+-    MouseArea {
+-      id: tabMouse
+-      anchors.fill: parent
+-      hoverEnabled: true
+-      cursorShape: tab.selected ? Qt.ArrowCursor : Qt.PointingHandCursor
+-      onClicked: tab.chosen()
+-    }
+-  }
+-
+   // Shipped beside this file so the widget works without anything on PATH.
+   readonly property string cli: Qt.resolvedUrl("bin/omdrop").toString().replace("file://", "")
+ 
+@@ -188,80 +142,39 @@ Panel {
+     onRunningChanged: if (!running) root.settleElapsed = 0
+   }
+ 
+-  // Discrete stops rather than a free 0-120 scale: the useful values are few,
+-  // and the two ends are modes, not durations. `settings.windowMinutes` (the
+-  // widget's own config) seeds the starting position; moving the slider
+-  // overrides it for this session.
++  // Two choices, like Apple's "Everyone for 10 Minutes": a 10-minute window,
++  // or one that stays open until it is turned off. The panel's switch picks.
+   readonly property var windowStops: [
+-    { arg: "once",    label: "One file, then off" },
+-    { arg: "1m",      label: "1 minute" },
+-    { arg: "5m",      label: "5 minutes" },
+     { arg: "10m",     label: "10 minutes" },
+-    { arg: "15m",     label: "15 minutes" },
+-    { arg: "30m",     label: "30 minutes" },
+-    { arg: "60m",     label: "1 hour" },
+     { arg: "forever", label: "Until I turn it off" }
+   ]
+-  property int windowIndex: defaultWindowIndex()
++  property int windowIndex: 0
+   readonly property string windowArg: windowStops[windowIndex].arg
+ 
+-  function defaultWindowIndex() {
+-    var want = settings.windowMinutes || 10
+-    for (var i = 0; i < windowStops.length; i++)
+-      if (windowStops[i].arg === want + "m") return i
+-    return 3
+-  }
+-
+-  // The slider is a control AND a report: while a window is running it has to
+-  // show the window that is running, not the setting the widget was configured
+-  // with. Turning on with "Until I turn it off" and reopening the panel showed
+-  // 10 minutes -- the toggle told the truth and the row beneath it did not.
+-  //
+-  // Only on a change of mode, so a running window never fights a user who is
+-  // dragging the slider to pick the next one. Going off leaves the last
+-  // position alone: it is what they chose, and most likely what they want next.
+-  //
+-  // A mode the user just asked for is not news: rescheduleWindow() records it
+-  // here so the poll that follows a reschedule does not read its own result as
+-  // a change and move the slider under the hand that just set it.
++  // The switch reports the window that is running, so a window turned on from
++  // the terminal shows as it is. Only on a change of mode, so the poll that
++  // follows a press does not read its own result as news.
+   property string windowMode: ""
+   function syncWindowToRunning(mode) {
+-    // A hand on the slider outranks anything a poll has to say.
+-    if (windowPicking) return
+     if (mode === windowMode) return
+     windowMode = mode
+-    var i
+-    if (mode === "once")    { windowIndex = 0; return }
+-    if (mode === "forever") { windowIndex = windowStops.length - 1; return }
+-    if (mode === "timed" && remaining > 0) {
+-      // Only what is LEFT is knowable, so land on the shortest stop that could
+-      // still be running: a 10-minute window with 4 minutes left reads as 5.
+-      var mins = remaining / 60
+-      for (i = 1; i < windowStops.length - 1; i++)
+-        if (parseInt(windowStops[i].arg) >= mins) { windowIndex = i; return }
+-    }
++    if (mode === "forever") windowIndex = 1
++    else if (mode === "timed" || mode === "once") windowIndex = 0
+   }
+   readonly property color barIconColor: receiving ? barForeground : Qt.darker(barForeground, 1.55)
+ 
+-
+-  // The headline names the state of the thing the switch controls: Omdrop is
+-  // on or it is off. "Not receiving" described a symptom, and read as a
+-  // complaint about a machine that was working exactly as asked.
+-  //
+-  // The shades of "on" -- advertising but unanswered, receiver up with nothing
+-  // on the radio -- live in detailText, which is where an explanation belongs.
+-  // The one exception stays a headline: a window that is open while nothing
+-  // can see us is a fault, not a nuance, and must not read as "on".
++  // The status line under the "AirDrop" title: off, or who can see us. A window
++  // that is open while nothing can see us is a fault, so it gets its own words.
++  // Explanations of anything else live in detailText.
+   readonly property string stateText: {
+-    if (!usable) return "Not available"
++    if (!usable) return "Unavailable"
+     if (busy) return (turningOn ? "Turning on" : "Turning off") + busyDots
+     if (settling) return "Waking the radio" + busyDots
+-    if (!receiving) return "Omdrop off"
+-    if (visibility === 0) return "Nobody can see you yet"
+-    return "Omdrop on"
++    if (!receiving) return "Off"
++    if (visibility === 0) return "Not visible yet"
++    return audience === "contacts" ? "Contacts Only" : "Everyone"
+   }
+ 
+-
+   // One sentence, naming what they will see and roughly when. In Contacts Only
+   // it names who, because "nearby Apple devices" would overstate it.
+   readonly property string visibleText: {
+@@ -283,36 +196,21 @@ Panel {
+     if (settling) return "The radio takes a few seconds to come up."
+     if (lastError !== "") return lastError
+     if (reasonText !== "") return reasonText
+-    if (!receiving) return "Nearby Apple devices cannot see this computer."
++    if (!receiving) return ""
+     if (visibility === 0) return "The receiver is up, but nothing is advertising on the radio."
+     if (visibility === -1) return "Cannot tell whether anyone can see us."
+-    return visibleText
++    return audience === "contacts" ? visibleText : ""
+   }
+ 
+-  // The row that set the window becomes the row that reports it: while a timed
+-  // window runs, the chosen duration is replaced by what is left of it. Only
+-  // for timed windows -- "one file" and "until I turn it off" have nothing to
+-  // count down, so they keep their label.
+-  //
+-  // While a hand is on the slider the label comes back, whatever is running:
+-  // a countdown answers a question nobody is asking mid-drag, and without the
+-  // label there is no way to see which stop you have landed on.
+-  property bool windowPicking: false
+-  readonly property bool countingDown: receiving && remaining > 0 && !windowPicking
+-  readonly property string windowValueText: {
+-    if (!countingDown) return windowStops[windowIndex].label
+-    var m = Math.floor(remaining / 60), sec = remaining % 60
+-    return (m < 10 ? "0" : "") + m + ":" + (sec < 10 ? "0" : "") + sec
+-  }
++  readonly property bool countingDown: receiving && remaining > 0
+ 
++  // The status line's clock: how long a press has been waiting, or what is
++  // left of a 10-minute window.
+   readonly property string countdownText: {
+-    if (busy) {
+-      if (busyElapsed < 4) return ""
+-      var m = Math.floor(busyElapsed / 60), s2 = busyElapsed % 60
+-      var phase = turningOn ? "WAKING THE RADIO" : "STOPPING"
+-      return phase + " · " + m + ":" + (s2 < 10 ? "0" : "") + s2
+-    }
+-    return ""
++    var t = busy ? (busyElapsed < 4 ? -1 : busyElapsed) : (countingDown ? remaining : -1)
++    if (t < 0) return ""
++    var m = Math.floor(t / 60), s2 = t % 60
++    return m + ":" + (s2 < 10 ? "0" : "") + s2
+   }
+ 
+   function toggleOmdrop() {
+@@ -323,15 +221,8 @@ Panel {
+     toggleProc.running = true
+   }
+ 
+-  // Moving the slider during a live window resets that window to the new
+-  // selection, counting from now: choosing 10 minutes leaves ten minutes,
+-  // whatever was left before. Without this the row only described the NEXT
+-  // press, so a user extending a window that was about to close had no way to
+-  // do it but turn Omdrop off and on again.
+-  //
+-  // On release rather than on every drag position: each call re-arms the
+-  // window timer and rewrites the radio's deadline, and a drag across the
+-  // slider would otherwise fire one of those per stop it passes over.
++  // Flipping the switch during a live window resets that window to the new
++  // choice, counting from now: 10 minutes leaves ten minutes, whatever was left.
+   function rescheduleWindow() {
+     if (!receiving || busy || !usable) return
+     windowMode = windowArg === "once" || windowArg === "forever" ? windowArg : "timed"
+@@ -467,7 +358,6 @@ Panel {
+   // root helper every 2 s, so running them back to back for as long as the
+   // radar was open kept a full core busy (#70).
+   property bool radarOpen: false
+-  property bool soundOn: true
+   property var peers: []            // [{mac, rssi, name}] -- the last listing, names merged in
+   property var peerNames: ({})      // mac -> name, everything learnt this session
+   property bool namesResolved: false  // a name lookup has answered at least once
+@@ -480,14 +370,13 @@ Panel {
+   readonly property bool namesWanted: peers.length === 0 || (fruitless < namesTries && peers.some(function(p) {
+     return p.name === "" && (unanswered[p.mac] || 0) < namesTries
+   }))
+-  property var flashedMacs: ({})    // rows that have had their arrival flash
+   readonly property bool scanning: radarOpen && root.opened && receiving && visibility === 1
+   // The line under the heading. Empty once there is a list to look at.
+   readonly property string radarStatus: {
+-    if (!receiving) return "Turning Omdrop on"
++    if (!receiving) return "Turning AirDrop on"
+     if (!scanning) return "Waiting for the radio"
+-    if (peers.length === 0) return "Searching for peers"
+-    if (!namesResolved) return "Resolving peer names"
++    if (peers.length === 0) return "Looking for devices"
++    if (!namesResolved) return "Asking for names"
+     return ""
+   }
+   readonly property bool radarWorking: radarOpen && radarStatus !== ""
+@@ -562,17 +451,6 @@ Panel {
+     namesResolved = true
+   }
+ 
+-  // A row flashes once, the first time its device appears in the list. A
+-  // device that leaves and comes back gets a new row, so "first time" has to
+-  // be remembered here rather than inferred from the row being created.
+-  function claimFlash(mac) {
+-    if (flashedMacs[mac]) return false
+-    var f = Object.assign({}, flashedMacs)
+-    f[mac] = true
+-    flashedMacs = f
+-    return true
+-  }
+-
+   function openRadar() {
+     radarOpen = !radarOpen
+     // Scanning is what a window does, so opening the radar on a machine that
+@@ -591,66 +469,6 @@ Panel {
+     }
+   }
+ 
+-  // ------------------------------------------------------------ known senders
+-  //
+-  // The Contacts Only allow-list, edited through `omdrop senders`. The
+-  // receiver rereads the file on every request, so a change applies to the
+-  // next transfer with no restart.
+-  property bool sendersOpen: false
+-  property var senderList: []      // identifiers exactly as stored
+-  property string senderError: ""
+-
+-  Process {
+-    id: sendersListProc
+-    command: [root.cli, "senders", "list", "--json"]
+-    stdout: StdioCollector {
+-      waitForEnd: true
+-      onStreamFinished: {
+-        try { root.senderList = JSON.parse(text) } catch (e) {}
+-      }
+-    }
+-  }
+-  function refreshSenders() {
+-    if (!sendersListProc.running) sendersListProc.running = true
+-  }
+-  function toggleSenders() {
+-    sendersOpen = !sendersOpen
+-    senderError = ""
+-    if (sendersOpen) refreshSenders()
+-  }
+-
+-  // The CLI validates, so the panel shows its sentence rather than keeping a
+-  // second copy of the rules.
+-  Process {
+-    id: sendersEditProc
+-    property bool clearField: false
+-    stderr: StdioCollector {
+-      waitForEnd: true
+-      onStreamFinished: root.senderError = text.trim().replace(/^omdrop: /, "")
+-    }
+-    onExited: function(code) {
+-      if (code === 0) {
+-        root.senderError = ""
+-        if (clearField) senderField.text = ""
+-      }
+-      root.refreshSenders()
+-      root.refreshStatus()
+-    }
+-  }
+-  function addSender(id) {
+-    id = id.trim()
+-    if (id === "" || sendersEditProc.running) return
+-    sendersEditProc.clearField = true
+-    sendersEditProc.command = [root.cli, "senders", "add", id]
+-    sendersEditProc.running = true
+-  }
+-  function removeSender(id) {
+-    if (sendersEditProc.running) return
+-    sendersEditProc.clearField = false
+-    sendersEditProc.command = [root.cli, "senders", "remove", id]
+-    sendersEditProc.running = true
+-  }
+-
+   Timer {
+     interval: 2000
+     repeat: true
+@@ -744,23 +562,6 @@ Panel {
+     }
+   }
+ 
+-  Process { id: soundProc; onExited: root.refreshStatus() }
+-  function toggleSound() {
+-    soundOn = !soundOn
+-    soundProc.command = [root.cli, "sound", soundOn ? "on" : "off"]
+-    soundProc.running = true
+-  }
+-
+-  // Saved, not per-window: the receiver reads it on every request, and the CLI
+-  // restarts a running receiver so the change takes effect now. The tab flips
+-  // straight away; the poll after the CLI exits is what confirms it.
+-  Process { id: audienceProc; onExited: root.refreshStatus() }
+-  function setAudience(mode) {
+-    if (mode === audience || audienceProc.running) return
+-    audience = mode
+-    audienceProc.command = [root.cli, "visibility", mode]
+-    audienceProc.running = true
+-  }
+ 
+   // ---------------------------------------------------------------- sending
+   //
+@@ -958,8 +759,7 @@ Panel {
+       downloadDir = s.dir || ""
+       blockedReason = s.reason || ""
+       syncWindowToRunning(s.mode || "off")
+-      if (!soundProc.running) soundOn = s.sound !== false
+-      if (!audienceProc.running) audience = s.visibility === "contacts" ? "contacts" : "everyone"
++      audience = s.visibility === "contacts" ? "contacts" : "everyone"
+       senders = s.senders || 0
+       if (!nameField.activeFocus) nameField.text = shownName
+       // Asked once per transition into unusable, not on every poll.
+@@ -1069,7 +869,7 @@ Panel {
+       // The catcher sees keys before its descendants, so while a text field
+       // is being typed into it must stand aside: otherwise Enter and Space
+       // toggle Omdrop, d and n act, and h/j/k/l/x never reach the field.
+-      blocked: nameField.activeFocus || senderField.activeFocus
++      blocked: nameField.activeFocus
+       onCloseRequested: root.controller.hide()
+       onActivateRequested: root.toggleOmdrop()
+       onTextKey: function(t) {
+@@ -1082,7 +882,7 @@ Panel {
+         anchors.left: parent.left
+         anchors.right: parent.right
+         anchors.top: parent.top
+-        spacing: Style.space(12)
++        spacing: Style.space(16)
+ 
+         Item {
+           width: parent.width
+@@ -1120,29 +920,24 @@ Panel {
+ 
+             Text {
+               width: parent.width
+-              text: root.stateText
++              text: "AirDrop"
+               color: root.foreground
+               font.family: root.fontFamily
+               font.pixelSize: Style.font.title
+               font.bold: true
+-              elide: Text.ElideRight
+             }
+ 
+             Text {
+               width: parent.width
+-              visible: root.countdownText !== ""
+-              text: root.countdownText
++              text: root.stateText + (root.countdownText !== "" ? " · " + root.countdownText : "")
+               color: Qt.darker(root.foreground, 1.4)
+               font.family: root.fontFamily
+-              font.pixelSize: Style.font.caption
+-              font.bold: true
+-              font.letterSpacing: 1.2
++              font.pixelSize: Style.font.bodySmall
++              elide: Text.ElideRight
+             }
+           }
+         }
+ 
+-        PanelSeparator { foreground: root.foreground }
+-
+         Text {
+           width: parent.width
+           visible: text !== ""
+@@ -1166,239 +961,39 @@ Panel {
+           onClicked: installDriverProc.running = true
+         }
+ 
+-        PanelSeparator { visible: root.usable; foreground: root.foreground }
+-
+-        // How long a press of the switch keeps us visible. Both ends are
+-        // modes: the floor stops after one file arrives, the ceiling never
+-        // stops on its own.
+-        Column {
+-          visible: root.usable
+-          width: parent.width
+-          spacing: Style.space(8)
+-
+-          Item {
+-            width: parent.width
+-            implicitHeight: Math.max(windowHeader.implicitHeight, windowValue.implicitHeight)
+-
+-            PanelSectionHeader {
+-              id: windowHeader
+-              text: "STAY VISIBLE FOR"
+-              foreground: root.foreground
+-              fontFamily: root.fontFamily
+-              anchors.left: parent.left
+-              anchors.verticalCenter: parent.verticalCenter
+-            }
+-
+-            Text {
+-              id: windowValue
+-              text: root.windowValueText
+-              // Under a minute it goes urgent: the last stretch is when you
+-              // care whether to press again.
+-              color: root.countingDown && root.remaining <= 60 ? root.urgent : root.foreground
+-              font.family: root.fontFamily
+-              font.pixelSize: Style.font.bodySmall
+-              font.bold: root.countingDown
+-              anchors.right: parent.right
+-              anchors.verticalCenter: parent.verticalCenter
+-
+-              Behavior on color { ColorAnimation { duration: 200 } }
+-            }
+-          }
+-
+-          PanelSlider {
+-            width: parent.width
+-            bar: root.bar
+-            minimum: 0
+-            maximum: root.windowStops.length - 1
+-            step: 1
+-            integer: true
+-            tickCount: root.windowStops.length
+-            value: root.windowIndex
+-            onMoved: function(v) { root.windowPicking = true; root.windowIndex = Math.round(v) }
+-            onReleased: function(v) {
+-              root.windowIndex = Math.round(v)
+-              root.windowPicking = false
+-              root.rescheduleWindow()
+-            }
+-          }
+-        }
+-
+-        // Who may send. Shown while Omdrop is off too, so the choice can be
+-        // made before a window opens rather than a few seconds into one. It is
+-        // saved, and applies to every window until changed.
+-        PanelSeparator { visible: root.usable; foreground: root.foreground }
+-
++        // Off: visible for 10 minutes. On: visible until AirDrop is turned off.
+         Item {
+           visible: root.usable
+           width: parent.width
+-          implicitHeight: Math.max(audienceTabs.implicitHeight, sendersButton.implicitHeight)
++          implicitHeight: Math.max(stayLabel.implicitHeight, staySwitch.implicitHeight)
+ 
+-          Row {
+-            id: audienceTabs
+-            spacing: Style.space(22)
++          Text {
++            id: stayLabel
++            anchors.left: parent.left
++            anchors.right: staySwitch.left
++            anchors.rightMargin: Style.space(12)
+             anchors.verticalCenter: parent.verticalCenter
+-
+-            // nf-md-account_multiple (U+F000E) and nf-md-account_circle
+-            // (U+F0009), written as surrogate pairs.
+-            AudienceTab {
+-              glyph: "\uDB80\uDC0E"
+-              label: "EVERYONE"
+-              selected: root.audience === "everyone"
+-              onChosen: root.setAudience("everyone")
+-            }
+-            AudienceTab {
+-              glyph: "\uDB80\uDC09"
+-              label: "CONTACTS ONLY"
+-              selected: root.audience === "contacts"
+-              onChosen: root.setAudience("contacts")
+-            }
++            textFormat: Text.PlainText
++            text: "Stay on until I turn it off"
++            color: root.foreground
++            font.family: root.fontFamily
++            font.pixelSize: Style.font.bodySmall
++            elide: Text.ElideRight
+           }
+ 
+-          // Opens the known-senders list. The count sits beside the icon in
+-          // the same dark colour, and is left out while the list is empty.
+-          Item {
+-            id: sendersButton
++          ToggleSwitch {
++            id: staySwitch
+             anchors.right: parent.right
+             anchors.verticalCenter: parent.verticalCenter
+-            implicitWidth: sendersRow.implicitWidth
+-            implicitHeight: sendersRow.implicitHeight + Style.space(4)
+-            width: implicitWidth
+-            height: implicitHeight
+-            readonly property color tint: root.sendersOpen || sendersMouse.containsMouse
+-                                          ? root.foreground : Qt.darker(root.foreground, 2.0)
+-
+-            Row {
+-              id: sendersRow
+-              anchors.verticalCenter: parent.verticalCenter
+-              spacing: Style.space(3)
+-              Text {
+-                // nf-md-account_multiple_plus (U+F0010)
+-                text: "\uDB80\uDC10"
+-                color: sendersButton.tint
+-                font.family: root.fontFamily
+-                font.pixelSize: Style.font.body
+-                anchors.verticalCenter: parent.verticalCenter
+-              }
+-              Text {
+-                visible: root.senders > 0
+-                text: root.senders
+-                color: sendersButton.tint
+-                font.family: root.fontFamily
+-                font.pixelSize: Style.font.caption
+-                font.bold: true
+-                anchors.verticalCenter: parent.verticalCenter
+-              }
+-            }
+-
+-            MouseArea {
+-              id: sendersMouse
+-              anchors.fill: parent
+-              anchors.margins: -Style.space(4)
+-              hoverEnabled: true
+-              cursorShape: Qt.PointingHandCursor
+-              onClicked: root.toggleSenders()
+-            }
+-
+-            PanelToolTip {
+-              visible: sendersMouse.containsMouse
+-              text: "Known senders, for Contacts Only"
+-              fontFamily: root.fontFamily
+-            }
+-          }
+-        }
+-
+-        // The known-senders list, opened from the button above.
+-        Column {
+-          visible: root.usable && root.sendersOpen
+-          width: parent.width
+-          spacing: Style.space(2)
+-
+-          Repeater {
+-            model: root.senderList
+-            delegate: Item {
+-              id: senderRow
+-              required property string modelData
+-              width: parent.width
+-              implicitHeight: senderText.implicitHeight + Style.space(10)
+-
+-              Rectangle {
+-                anchors.fill: parent
+-                visible: senderMouse.containsMouse
+-                color: Style.hoverFillFor(root.foreground, Commons.Color.accent)
+-              }
+-              Text {
+-                id: senderText
+-                anchors.left: parent.left
+-                anchors.leftMargin: Style.space(10)
+-                anchors.right: removeGlyph.left
+-                anchors.verticalCenter: parent.verticalCenter
+-                text: senderRow.modelData
+-                textFormat: Text.PlainText
+-                elide: Text.ElideRight
+-                color: root.foreground
+-                font.family: root.fontFamily
+-                font.pixelSize: Style.font.bodySmall
+-              }
+-              Text {
+-                id: removeGlyph
+-                anchors.right: parent.right
+-                anchors.rightMargin: Style.space(10)
+-                anchors.verticalCenter: parent.verticalCenter
+-                text: "×"
+-                color: senderMouse.containsMouse ? root.foreground : root.dim
+-                font.family: root.fontFamily
+-                font.pixelSize: Style.font.body
+-              }
+-              MouseArea {
+-                id: senderMouse
+-                anchors.fill: parent
+-                hoverEnabled: true
+-                cursorShape: Qt.PointingHandCursor
+-                onClicked: root.removeSender(senderRow.modelData)
+-              }
+-              PanelToolTip {
+-                visible: senderMouse.containsMouse
+-                text: "Remove " + senderRow.modelData
+-                fontFamily: root.fontFamily
+-              }
+-            }
+-          }
+-
+-          TextField {
+-            id: senderField
+-            width: parent.width
++            checked: root.windowIndex === 1
+             foreground: root.foreground
+-            placeholderText: "Apple ID email or phone number"
+-            onTextEdited: root.senderError = ""
+-            onAccepted: root.addSender(text)
+-            Keys.onEscapePressed: keyCatcher.forceActiveFocus()
+-          }
+-
+-          Text {
+-            width: parent.width
+-            visible: root.senderError !== ""
+-            text: root.senderError
+-            color: root.urgent
+-            font.family: root.fontFamily
+-            font.pixelSize: Style.font.caption
+-            wrapMode: Text.WordWrap
+-            topPadding: Style.space(4)
+-          }
+-
+-          Text {
+-            width: parent.width
+-            visible: root.senderList.length === 0 && root.senderError === ""
+-            text: "In Contacts Only, only these people can send to you. Use the email or phone number of their Apple ID."
+-            color: Qt.darker(root.foreground, 1.5)
+-            font.family: root.fontFamily
+-            font.pixelSize: Style.font.caption
+-            wrapMode: Text.WordWrap
+-            topPadding: Style.space(4)
++            onToggled: {
++              root.windowIndex = 1 - root.windowIndex
++              root.rescheduleWindow()
++            }
+           }
+         }
+ 
+-        PanelSeparator { visible: root.usable; foreground: root.foreground }
+-
+         // Sending. A header that opens downwards onto the radar, the
+         // newest name it has learnt, and the devices that can be sent to.
+         Item {
+@@ -1410,7 +1005,7 @@ Panel {
+             id: nearbyHeader
+             anchors.left: parent.left
+             anchors.verticalCenter: parent.verticalCenter
+-            text: "SEND TO PEERS"
++            text: "Nearby devices"
+             foreground: root.foreground
+             fontFamily: root.fontFamily
+           }
+@@ -1447,31 +1042,30 @@ Panel {
+           }
+         }
+ 
++        // Nearby devices, the way an Apple share sheet shows them: a round
++        // icon per named device with its name underneath. Clicking one opens
++        // the file chooser. Until a device answers with its name, one line
++        // says what is happening.
+         Item {
+           id: radarDrawer
+           visible: root.usable && height > 0
+           width: parent.width
+           height: root.radarOpen ? radarColumn.implicitHeight : 0
+           clip: true
+-          Behavior on height { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
++          Behavior on height { NumberAnimation { duration: Style.duration(200); easing.type: Easing.OutCubic } }
+ 
+           Column {
+             id: radarColumn
+             width: parent.width
++            topPadding: Style.space(4)
+             spacing: Style.space(10)
+ 
+-            // What the radar is doing, until there is nothing left to say:
+-            // searching until a device is heard, resolving until the first
+-            // name lookup has answered, then gone.
+-            //
+             // The words stay still and only the dots move: the sentence is
+-            // centred as if it always carried three dots, and the dots grow to
+-            // its right in their own Text. Centring the whole string instead
+-            // shifted every word left and right as the dots changed.
++            // centred as if it always carried three dots.
+             Item {
+               width: parent.width
+-              visible: root.radarWorking
+-              implicitHeight: statusWords.implicitHeight
++              visible: root.radarOpen && root.namedPeers.length === 0
++              implicitHeight: statusWords.implicitHeight + Style.space(16)
+ 
+               TextMetrics {
+                 id: threeDots
+@@ -1481,9 +1075,10 @@ Panel {
+ 
+               Text {
+                 id: statusWords
++                anchors.verticalCenter: parent.verticalCenter
+                 x: Math.max(0, Math.round((parent.width - implicitWidth - threeDots.advanceWidth) / 2))
+                 textFormat: Text.PlainText
+-                text: root.radarStatus
++                text: root.radarStatus !== "" ? root.radarStatus : "Looking for devices"
+                 color: root.dim
+                 font.family: root.fontFamily
+                 font.pixelSize: Style.font.bodySmall
+@@ -1499,48 +1094,30 @@ Panel {
+               }
+             }
+ 
+-            // The devices that can be sent to, first under the heading, where a
+-            // new one is seen the moment it arrives.
+-            Repeater {
+-              model: peerRows
+-              delegate: PeerRow {
+-                required property string mac
+-                required property string name
+-                width: radarColumn.width
+-                peer: ({ mac: mac, name: name })
+-              }
+-            }
+-
+-            PanelSeparator {
+-              visible: root.namedPeers.length > 0
++            Flow {
+               width: parent.width
+-              foreground: root.foreground
+-            }
++              visible: root.namedPeers.length > 0
+ 
+-            Radar {
+-              anchors.horizontalCenter: parent.horizontalCenter
+-              width: Math.min(parent.width, Style.space(220))
+-              peers: root.peers
+-              scanning: root.scanning
+-              muted: !root.soundOn
+-              foreground: root.foreground
+-              fontFamily: root.fontFamily
+-              soundDir: Qt.resolvedUrl("share/sounds").toString().replace("file://", "")
+-              onMuteToggled: root.toggleSound()
+-              onPeerClicked: function(mac) { root.sendTo(mac) }
++              Repeater {
++                model: peerRows
++                delegate: PeerTile {
++                  required property string mac
++                  required property string name
++                  width: radarColumn.width / 4
++                  peer: ({ mac: mac, name: name })
++                }
++              }
+             }
+           }
+         }
+ 
+-        PanelSeparator { visible: root.usable; foreground: root.foreground }
+-
+         Column {
+           visible: root.usable
+           width: parent.width
+           spacing: Style.space(8)
+ 
+           PanelSectionHeader {
+-            text: "THEY SEE YOU AS"
++            text: "Name"
+             foreground: root.foreground
+             fontFamily: root.fontFamily
+           }
+@@ -1572,7 +1149,7 @@ Panel {
+           spacing: Style.space(8)
+ 
+           PanelSectionHeader {
+-            text: "SAVE FILES TO"
++            text: "Save to"
+             foreground: root.foreground
+             fontFamily: root.fontFamily
+           }
+@@ -1595,178 +1172,137 @@ Panel {
+     }
+   }
+ 
+-  // A device that can be sent to: its name, its address, and the progress of
+-  // a send while one is going to it. Clicking it opens the chooser.
+-  component PeerRow: CursorSurface {
+-    id: row
++  // A device that can be sent to: a round icon, its name, and while a send is
++  // going to it, a ring around the icon and one line of status. Clicking it
++  // opens the chooser; clicking it again mid-send cancels, and after a
++  // failure clears the error.
++  component PeerTile: Item {
++    id: tile
+     required property var peer
+     readonly property bool target: root.sendingTo === peer.mac
+-
+-    foreground: root.foreground
+-    implicitHeight: rowText.implicitHeight + Style.spacing.rowPaddingX
+-
+-    // A flash that fades, the first time this device's name appears, so a
+-    // new arrival is noticed without looking for it.
+-    Rectangle {
+-      id: flash
+-      anchors.fill: parent
+-      radius: Style.space(4)
+-      color: root.foreground
+-      opacity: 0
+-
+-      SequentialAnimation {
+-        id: flashAnim
+-        NumberAnimation { target: flash; property: "opacity"; to: 0.45; duration: 120; easing.type: Easing.OutQuad }
+-        NumberAnimation { target: flash; property: "opacity"; to: 0; duration: 1400; easing.type: Easing.InQuad }
+-      }
++    readonly property real circle: Style.space(52)
++
++    implicitHeight: tileColumn.implicitHeight + Style.space(8)
++
++    // Nerd Font glyphs (nf-md-cellphone, tablet, laptop, monitor) picked from
++    // the name a device gives; anything else gets its first letter.
++    readonly property string glyph: {
++      var n = peer.name.toLowerCase()
++      if (/iphone|phone/.test(n)) return "󰄜"
++      if (/ipad/.test(n)) return "󰓶"
++      if (/macbook|book/.test(n)) return "󰌢"
++      if (/imac|mac mini|mac studio|mac pro/.test(n)) return "󰍹"
++      return ""
+     }
+-    Component.onCompleted: if (root.claimFlash(peer.mac)) flashAnim.start()
+-
+-    Column {
+-      id: rowText
+-      z: 1   // above the row's MouseArea, so the cancel button gets its clicks
+-      anchors.left: parent.left
+-      anchors.right: parent.right
+-      anchors.leftMargin: Style.spacing.controlPaddingX
+-      anchors.rightMargin: Style.spacing.controlPaddingX
+-      anchors.verticalCenter: parent.verticalCenter
+-      spacing: Style.space(2)
+ 
+-      Item {
+-        width: parent.width
+-        implicitHeight: nameText.implicitHeight
+-
+-        Text {
+-          id: nameText
+-          anchors.left: parent.left
+-          anchors.right: macText.left
+-          anchors.rightMargin: Style.space(8)
+-          textFormat: Text.PlainText
+-          // A device with no name yet is called by its address.
+-          text: row.peer.name || row.peer.mac
+-          color: root.foreground
+-          font.family: root.fontFamily
+-          font.pixelSize: Style.font.body
+-          font.bold: row.target
+-          elide: Text.ElideRight
+-        }
++    opacity: 0
++    Component.onCompleted: opacity = 1
++    Behavior on opacity { NumberAnimation { duration: Style.duration(180); easing.type: Easing.OutCubic } }
+ 
+-        Text {
+-          id: macText
+-          anchors.right: parent.right
+-          anchors.verticalCenter: parent.verticalCenter
+-          visible: row.peer.name !== ""
+-          text: row.peer.mac
+-          color: root.dim
+-          font.family: root.fontFamily
+-          font.pixelSize: Style.font.caption
+-        }
+-      }
++    Column {
++      id: tileColumn
++      anchors.horizontalCenter: parent.horizontalCenter
++      width: parent.width - Style.space(4)
++      spacing: Style.space(6)
+ 
+-      // The status, with a way out: while a send is under way, an × to its
+-      // right cancels it -- the wait for a sleeping device can run 30 s.
+       Item {
+-        width: parent.width
+-        visible: row.target && root.sendStatus !== ""
+-        implicitHeight: Math.max(statusText.implicitHeight, cancelButton.visible ? cancelButton.height : 0)
+-
+-        Text {
+-          id: statusText
+-          anchors.left: parent.left
+-          anchors.right: cancelButton.visible ? cancelButton.left : parent.right
+-          anchors.rightMargin: cancelButton.visible ? Style.space(6) : 0
+-          textFormat: Text.PlainText
+-          text: root.sendStatus
+-          color: root.sendFailed ? root.urgent : Qt.darker(root.foreground, 1.3)
+-          font.family: root.fontFamily
+-          font.pixelSize: Style.font.caption
+-          wrapMode: Text.WordWrap
+-        }
++        anchors.horizontalCenter: parent.horizontalCenter
++        width: tile.circle + Style.space(8)
++        height: width
+ 
+         Rectangle {
+-          id: cancelButton
+-          // Cancels a send under way; dismisses a failure once it is read.
+-          visible: root.sendActive || (root.sendFailed && !sendProc.running)
+-          anchors.right: parent.right
+-          anchors.top: parent.top
+-          width: Style.space(20); height: width
++          anchors.centerIn: parent
++          width: tile.circle
++          height: width
+           radius: width / 2
+-          color: cancelMouse.containsMouse ? Style.hoverFillFor(root.foreground, Commons.Color.accent) : "transparent"
++          color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b,
++                         tileMouse.containsMouse || tile.target ? 0.22 : 0.12)
++          Behavior on color { ColorAnimation { duration: Style.duration(120) } }
+ 
+           Text {
+             anchors.centerIn: parent
+-            text: "×"
+-            color: cancelMouse.containsMouse ? root.foreground : root.dim
++            textFormat: Text.PlainText
++            text: tile.glyph !== "" ? tile.glyph : tile.peer.name.charAt(0).toUpperCase()
++            color: root.foreground
+             font.family: root.fontFamily
+-            font.pixelSize: Style.font.body
++            font.pixelSize: tile.glyph !== "" ? Style.space(24) : Style.font.title
++            font.bold: tile.glyph === ""
+           }
++        }
+ 
+-          MouseArea {
+-            id: cancelMouse
+-            anchors.fill: parent
+-            hoverEnabled: true
+-            cursorShape: Qt.PointingHandCursor
+-            onClicked: root.sendFailed ? root.dismissSend() : root.cancelSend()
++        // The sender reports stages, not bytes, so a send in progress spins a
++        // quarter arc and a finished one closes the ring.
++        Shape {
++          anchors.fill: parent
++          visible: tile.target && (root.sendActive || root.sendDone || root.sendFailed)
++          preferredRendererType: Shape.CurveRenderer
++          RotationAnimation on rotation {
++            running: tile.target && root.sendActive
++            loops: Animation.Infinite
++            from: 0; to: 360
++            duration: 1100
+           }
+ 
+-          PanelToolTip {
+-            visible: cancelMouse.containsMouse
+-            text: root.sendFailed ? "Dismiss" : "Cancel the send"
+-            fontFamily: root.fontFamily
++          ShapePath {
++            strokeColor: root.sendFailed ? root.urgent : root.foreground
++            strokeWidth: Style.space(2)
++            fillColor: "transparent"
++            capStyle: ShapePath.RoundCap
++            PathAngleArc {
++              centerX: tile.circle / 2 + Style.space(4)
++              centerY: centerX
++              radiusX: tile.circle / 2 + Style.space(2)
++              radiusY: radiusX
++              startAngle: -90
++              sweepAngle: root.sendActive ? 90 : 360
++            }
+           }
+         }
+       }
+ 
+-      // Progress, honestly: the sender reports stages (asked, accepted, sent)
+-      // and no byte counts, so while a transfer runs the bar says "working"
+-      // with a sliding segment rather than inventing a percentage. It fills
+-      // when the file has arrived.
+-      Rectangle {
+-        id: track
+-        visible: row.target && (root.sendActive || root.sendDone)
++      Text {
+         width: parent.width
+-        height: Style.space(3)
+-        radius: height / 2
+-        color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.15)
+-        clip: true
+-
+-        Rectangle {
+-          id: segment
+-          visible: root.sendActive
+-          height: parent.height
+-          radius: parent.radius
+-          color: root.foreground
+-          width: track.width * 0.3
+-
+-          NumberAnimation on x {
+-            running: segment.visible && track.visible
+-            loops: Animation.Infinite
+-            from: -segment.width; to: track.width
+-            duration: 1100; easing.type: Easing.InOutQuad
+-          }
+-        }
++        horizontalAlignment: Text.AlignHCenter
++        textFormat: Text.PlainText
++        text: tile.peer.name
++        color: root.foreground
++        font.family: root.fontFamily
++        font.pixelSize: Style.font.caption
++        wrapMode: Text.Wrap
++        maximumLineCount: 2
++        elide: Text.ElideRight
++      }
+ 
+-        Rectangle {
+-          visible: root.sendDone
+-          anchors.fill: parent
+-          radius: parent.radius
+-          color: root.foreground
+-        }
++      Text {
++        width: parent.width
++        visible: tile.target && root.sendStatus !== ""
++        horizontalAlignment: Text.AlignHCenter
++        textFormat: Text.PlainText
++        text: root.sendDone ? "Sent" : root.sendFailed ? "Failed" : root.sendActive ? "Waiting…" : "Choosing…"
++        color: root.sendFailed ? root.urgent : root.dim
++        font.family: root.fontFamily
++        font.pixelSize: Style.font.caption
+       }
+     }
+ 
+     MouseArea {
+-      id: rowMouse
++      id: tileMouse
+       anchors.fill: parent
+       hoverEnabled: true
+-      cursorShape: sendProc.running ? Qt.BusyCursor : Qt.PointingHandCursor
+-      onContainsMouseChanged: row.hasCursor = containsMouse
+-      onClicked: root.sendTo(row.peer.mac)
++      cursorShape: Qt.PointingHandCursor
++      onClicked: {
++        if (tile.target && root.sendActive) root.cancelSend()
++        else if (tile.target && root.sendFailed && !sendProc.running) root.dismissSend()
++        else root.sendTo(tile.peer.mac)
++      }
+     }
+ 
++    // The full status lives here, so a failure can still be read.
+     PanelToolTip {
+-      visible: rowMouse.containsMouse && !sendProc.running
+-      text: "Send a file to " + (row.peer.name || row.peer.mac)
++      visible: tileMouse.containsMouse
++      text: tile.target && root.sendStatus !== ""
++            ? root.sendStatus + (root.sendActive ? " (click to cancel)" : "")
++            : "Send files to " + tile.peer.name
+       fontFamily: root.fontFamily
+     }
+   }
+diff --git a/Radar.qml b/Radar.qml
+deleted file mode 100644
+index 8ed9375..0000000
+--- a/Radar.qml
++++ /dev/null
+@@ -1,458 +0,0 @@
+-pragma ComponentBehavior: Bound
+-
+-import QtQuick
+-import QtQuick.Shapes
+-import Quickshell
+-import Quickshell.Io
+-import qs.Commons
+-import qs.Commons as Commons
+-import qs.Ui
+-
+-Item {
+-  id: root
+-  property var peers: []
+-  property bool scanning: false
+-  property bool muted: false
+-  property color foreground: Commons.Color.foreground
+-  property string fontFamily: Style.font.family
+-  property string soundDir: ""
+-  signal muteToggled()
+-  signal peerClicked(string mac)
+-
+-  implicitWidth: Style.space(260)
+-  implicitHeight: width
+-  readonly property bool active: visible && scanning
+-  readonly property real radius: Math.max(0, Math.min(width, height) / 2 - Style.space(8))
+-  property real sweepAngle: 0
+-  property var labelPositions: ({})
+-  property real previousSweepAngle: -1
+-
+-  function advanceSweep() {
+-    var current = (sweepAngle + 360) % 360
+-    var previous = previousSweepAngle
+-    previousSweepAngle = current
+-    if (!active || previous < 0) return
+-    var travelled = (current - previous + 360) % 360
+-    if (travelled === 0) return
+-    for (var i = 0; i < contactRepeater.count; i++) {
+-      var contact = contactRepeater.itemAt(i)
+-      if (!contact || !contact.present) continue
+-      // Use the displayed dot, including an in-flight RSSI position animation.
+-      var angle = (Math.atan2(contact.x - width / 2, height / 2 - contact.y) * 180 / Math.PI + 360) % 360
+-      var distance = (angle - previous + 360) % 360
+-      if (distance > 0 && distance <= travelled) contact.sweepHit()
+-    }
+-  }
+-
+-  onSweepAngleChanged: advanceSweep()
+-
+-  // Run on snapshot/geometry/font changes, never on sweep frames.
+-  function layoutLabels() {
+-    if (!visible) return
+-    var ordered = []
+-    for (var i = 0; i < contactRepeater.count; i++) {
+-      var item = contactRepeater.itemAt(i)
+-      if (item && item.present && item.peerName !== "") ordered.push(item)
+-    }
+-    ordered.sort(function(a, b) {
+-      return b.strength - a.strength || Number(b.knownSignal) - Number(a.knownSignal)
+-          || (a.mac < b.mac ? -1 : a.mac > b.mac ? 1 : 0)
+-    })
+-    var placed = []
+-    var positions = {}
+-    var inset = Math.max(0, radius - Style.space(5))
+-    var gap = Style.space(9)
+-    var padX = Style.space(4)
+-    var padY = Style.space(3)
+-    for (var j = 0; j < ordered.length; j++) {
+-      var peer = ordered[j]
+-      var labelHeight = peer.labelHeight
+-      var preferred = peer.targetX > width / 2 ? -1 : 1
+-      var attempts = [[preferred, 0], [-preferred, 0],
+-                      [-preferred, labelHeight + padY * 2], [-preferred, -labelHeight - padY * 2]]
+-      for (var k = 0; k < attempts.length; k++) {
+-        var side = attempts[k][0]
+-        var top = Math.max(height / 2 - inset + labelHeight / 2,
+-                           Math.min(peer.targetY - labelHeight / 2 + attempts[k][1],
+-                                    height / 2 + inset - labelHeight * 1.5))
+-        var edgeY = Math.max(Math.abs(top - height / 2), Math.abs(top + labelHeight - height / 2))
+-        var halfChord = Math.sqrt(Math.max(0, inset * inset - edgeY * edgeY))
+-        var available = side > 0 ? width / 2 + halfChord - peer.targetX - gap
+-                                 : peer.targetX - gap - (width / 2 - halfChord)
+-        var labelWidth = Math.min(peer.labelWidth, width * 0.42, available)
+-        if (labelWidth < Math.min(peer.labelWidth, Style.space(24))) continue
+-        var left = side > 0 ? peer.targetX + gap : peer.targetX - gap - labelWidth
+-        var box = { x: left, y: top, width: labelWidth, height: labelHeight }
+-        var collides = placed.some(function(other) {
+-          return box.x - padX < other.x + other.width + padX
+-              && box.x + box.width + padX > other.x - padX
+-              && box.y - padY < other.y + other.height + padY
+-              && box.y + box.height + padY > other.y - padY
+-        })
+-        if (!collides) {
+-          positions[peer.mac] = box
+-          placed.push(box)
+-          break
+-        }
+-      }
+-    }
+-    labelPositions = positions
+-  }
+-
+-  function angleFor(mac) {
+-    var hash = 0
+-    for (var i = 0; i < mac.length; i++) hash = (hash * 31 + mac.charCodeAt(i)) >>> 0
+-    return hash % 360
+-  }
+-
+-  function removeDeparted() {
+-    for (var i = contacts.count - 1; i >= 0; i--)
+-      if (!contacts.get(i).present) contacts.remove(i)
+-    Qt.callLater(root.layoutLabels)
+-  }
+-
+-  // Panel supplies a successful, merged snapshot. A failed poll must not become [].
+-  function reconcile() {
+-    var snapshot = peers || []
+-    var seen = {}
+-    var added = false
+-    for (var i = 0; i < snapshot.length; i++) {
+-      var peer = snapshot[i]
+-      if (!peer || typeof peer.mac !== "string" || !peer.mac) continue
+-      var mac = peer.mac.toLowerCase()
+-      if (seen[mac]) continue
+-      seen[mac] = true
+-      var known = typeof peer.rssi === "number" && isFinite(peer.rssi)
+-      var strength = known ? Math.max(0, Math.min(1, (peer.rssi + 90) / 60)) : 0
+-      var name = typeof peer.name === "string" ? peer.name : ""
+-      var found = -1
+-      for (var j = 0; j < contacts.count; j++) {
+-        if (contacts.get(j).mac === mac) { found = j; break }
+-      }
+-      // Sound belongs to devices that can be sent to: the blip marks a name
+-      // arriving, whether on a new dot or on one already drawn.
+-      if (found < 0) {
+-        contacts.append({ mac: mac, peerName: name, bearing: angleFor(mac), strength: strength,
+-                          knownSignal: known, present: true })
+-        if (name !== "") added = true
+-      } else {
+-        if (name !== "" && contacts.get(found).peerName === "") added = true
+-        contacts.set(found, { mac: mac, peerName: name, bearing: angleFor(mac), strength: strength,
+-                              knownSignal: known, present: true })
+-      }
+-    }
+-    var departed = false
+-    for (var k = 0; k < contacts.count; k++) {
+-      if (!seen[contacts.get(k).mac]) {
+-        contacts.setProperty(k, "present", false)
+-        departed = true
+-      }
+-    }
+-    if (departed && visible) departureTimer.restart()
+-    else if (!visible) removeDeparted()
+-    if (added) playSound("blip.wav", 0.55, "")
+-    Qt.callLater(root.layoutLabels)
+-  }
+-
+-  // Three tracked voices; a saturated pool drops a crossing rather than delaying it.
+-  readonly property var voices: [voiceOne, voiceTwo, voiceThree]
+-  function playSound(filename, volume, mac) {
+-    if (!active || muted || !soundDir) return
+-    for (var i = 0; i < voices.length; i++) {
+-      var voice = voices[i]
+-      if (voice.running) continue
+-      voice.peerMac = mac
+-      voice.command = ["/bin/sh", "-c",
+-        'if command -v pw-play >/dev/null 2>&1; then exec pw-play --volume \"$2\" \"$1\"; elif command -v paplay >/dev/null 2>&1; then exec paplay --volume \"$3\" \"$1\"; fi',
+-        "omdrop-sound", soundDir + "/" + filename, String(volume), String(Math.round(volume * 65536))]
+-      voice.running = true
+-      return
+-    }
+-  }
+-
+-  function stopContactSound(mac) {
+-    for (var i = 0; i < voices.length; i++)
+-      if (voices[i].peerMac === mac) voices[i].running = false
+-  }
+-
+-  function stopSounds() {
+-    for (var v = 0; v < voices.length; v++) voices[v].running = false
+-    for (var i = 0; i < contactRepeater.count; i++) {
+-      var contact = contactRepeater.itemAt(i)
+-      if (contact) contact.quiet(!active)
+-    }
+-  }
+-
+-  onPeersChanged: reconcile()
+-  onActiveChanged: {
+-    previousSweepAngle = -1
+-    if (!active) stopSounds()
+-  }
+-  onMutedChanged: if (muted) stopSounds()
+-  onWidthChanged: Qt.callLater(root.layoutLabels)
+-  onHeightChanged: Qt.callLater(root.layoutLabels)
+-  onRadiusChanged: Qt.callLater(root.layoutLabels)
+-  onVisibleChanged: {
+-    if (!visible) {
+-      departureTimer.stop()
+-      removeDeparted()
+-    } else Qt.callLater(root.layoutLabels)
+-  }
+-  Component.onCompleted: reconcile()
+-  Component.onDestruction: stopSounds()
+-
+-  ListModel { id: contacts }
+-  Timer { id: departureTimer; interval: 240; onTriggered: root.removeDeparted() }
+-  Process { id: voiceOne; property string peerMac: "" }
+-  Process { id: voiceTwo; property string peerMac: "" }
+-  Process { id: voiceThree; property string peerMac: "" }
+-  NumberAnimation on sweepAngle {
+-    from: 0; to: 360; duration: 4000; loops: Animation.Infinite
+-    running: root.active
+-  }
+-
+-  Repeater {
+-    model: 3
+-    Rectangle {
+-      required property int index
+-      width: root.radius * 2 * (index + 1) / 3
+-      height: width
+-      radius: width / 2
+-      anchors.centerIn: parent
+-      color: "transparent"
+-      border.width: 1
+-      border.color: root.foreground
+-      opacity: 0.16
+-    }
+-  }
+-  Rectangle {
+-    anchors.centerIn: parent
+-    width: root.radius * 2; height: 1
+-    color: root.foreground; opacity: 0.10
+-  }
+-  Rectangle {
+-    anchors.centerIn: parent
+-    height: root.radius * 2; width: 1
+-    color: root.foreground; opacity: 0.10
+-  }
+-  Item {
+-    anchors.centerIn: parent
+-    width: root.radius * 2; height: width
+-    rotation: root.sweepAngle
+-    visible: root.scanning
+-    Shape {
+-      anchors.fill: parent
+-      ShapePath {
+-        strokeWidth: 0
+-        strokeColor: "transparent"
+-        fillGradient: ConicalGradient {
+-          centerX: root.radius; centerY: root.radius
+-          // Gradients run counter-clockwise: this is behind the clockwise sweep.
+-          angle: 90
+-          GradientStop { position: 0; color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.25) }
+-          GradientStop { position: 0.08; color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.12) }
+-          GradientStop { position: 70 / 360; color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0) }
+-          GradientStop { position: 1; color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0) }
+-        }
+-        startX: root.radius; startY: 0
+-        PathArc { x: root.radius; y: root.radius * 2; radiusX: root.radius; radiusY: root.radius }
+-        PathArc { x: root.radius; y: 0; radiusX: root.radius; radiusY: root.radius }
+-      }
+-      ShapePath {
+-        strokeWidth: 1.5
+-        strokeColor: root.foreground
+-        fillColor: "transparent"
+-        startX: root.radius; startY: root.radius
+-        PathLine { x: root.radius; y: 0 }
+-      }
+-    }
+-  }
+-
+-  Repeater {
+-    id: contactRepeater
+-    model: contacts
+-    delegate: Item {
+-      id: contact
+-      required property string mac
+-      required property string peerName
+-      required property real bearing
+-      required property real strength
+-      required property bool knownSignal
+-      required property bool present
+-      readonly property real labelWidth: label.implicitWidth
+-      readonly property real labelHeight: label.implicitHeight
+-      readonly property var labelPlacement: root.labelPositions[mac] || null
+-      readonly property real targetX: root.width / 2 + Math.sin(radians) * root.radius * radialFraction
+-      readonly property real targetY: root.height / 2 - Math.cos(radians) * root.radius * radialFraction
+-      Component.onCompleted: Qt.callLater(root.layoutLabels)
+-      readonly property bool hot: peerButton.enabled && (peerMouse.containsMouse || peerButton.activeFocus)
+-      z: hot ? 3 : peerName !== "" ? 2 : 1
+-      readonly property real radialFraction: knownSignal ? 0.92 - 0.74 * strength : 0.96
+-      readonly property real radians: bearing * Math.PI / 180
+-      property real flare: 0
+-      function sweepHit() {
+-        pulseDecay.stop()
+-        flare = 1
+-        pulseDecay.restart()
+-        // Every dot pulses; only named ones ping, so the sound marks the
+-        // devices you know rather than every radio in the room.
+-        if (peerName !== "")
+-          root.playSound("contact-" + (1 + Math.round(strength * 4)) + ".wav", 0.55 + 0.45 * strength, mac)
+-      }
+-      function quiet(clearPulse) {
+-        root.stopContactSound(mac)
+-        if (clearPulse) {
+-          pulseDecay.stop()
+-          flare = 0
+-        }
+-      }
+-      onPresentChanged: if (!present) quiet(true)
+-      Component.onDestruction: quiet(true)
+-      NumberAnimation {
+-        id: pulseDecay
+-        target: contact
+-        property: "flare"
+-        to: 0
+-        duration: 600
+-        easing.type: Easing.OutCubic
+-      }
+-      property real entrance: 0
+-      x: targetX
+-      y: targetY
+-      opacity: present ? entrance : 0
+-      scale: 0.65 + 0.35 * entrance
+-      Behavior on opacity { enabled: root.visible; NumberAnimation { duration: 200 } }
+-      NumberAnimation on entrance { from: 0; to: 1; duration: 220; running: root.visible }
+-      Behavior on x { enabled: root.visible; NumberAnimation { duration: 400 } }
+-      Behavior on y { enabled: root.visible; NumberAnimation { duration: 400 } }
+-
+-      Rectangle {
+-        anchors.centerIn: parent
+-        width: Style.space(15) + contact.flare * Style.space(8)
+-        height: width; radius: width / 2
+-        color: root.foreground
+-        opacity: contact.knownSignal ? 0.06 + 0.16 * contact.flare : 0.03 + 0.10 * contact.flare
+-      }
+-      Rectangle {
+-        anchors.centerIn: parent
+-        width: Style.space(6); height: width; radius: width / 2
+-        color: root.foreground
+-        opacity: contact.hot ? 1 : contact.knownSignal ? Math.min(1, 0.35 + 0.5 * contact.strength + 0.4 * contact.flare) : 0.22 + 0.4 * contact.flare
+-      }
+-      Rectangle {
+-        x: label.x - Style.space(4); y: label.y - Style.space(3)
+-        width: label.width + Style.space(8); height: label.height + Style.space(6)
+-        radius: Style.space(4)
+-        visible: contact.hot && label.visible
+-        color: Style.hoverFillFor(root.foreground, Commons.Color.accent)
+-      }
+-      Text {
+-        id: label
+-        visible: contact.peerName !== "" && contact.labelPlacement !== null
+-        text: contact.peerName
+-        textFormat: Text.PlainText
+-        color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, contact.hot ? 1 : 0.72)
+-        font.family: root.fontFamily
+-        font.pixelSize: Style.font.caption
+-        onImplicitWidthChanged: Qt.callLater(root.layoutLabels)
+-        onImplicitHeightChanged: Qt.callLater(root.layoutLabels)
+-        width: contact.labelPlacement ? contact.labelPlacement.width : 0
+-        elide: Text.ElideRight
+-        x: contact.labelPlacement ? contact.labelPlacement.x - contact.x : 0
+-        y: contact.labelPlacement ? contact.labelPlacement.y - contact.y : 0
+-      }
+-      Item {
+-        id: peerButton
+-        // Any dot can be sent to. A device need not have answered a name
+-        // lookup to accept a file, so its address is target enough.
+-        enabled: contact.present
+-        activeFocusOnTab: enabled && root.visible
+-        x: Math.min(-Style.space(14), label.x - Style.space(4))
+-        y: Math.min(-Style.space(14), label.y - Style.space(3))
+-        width: Math.max(Style.space(14), label.x + label.width + Style.space(4)) - x
+-        height: Math.max(Style.space(14), label.y + label.height + Style.space(3)) - y
+-        z: 1
+-        Accessible.role: Accessible.Button
+-        Accessible.name: "Send to " + (contact.peerName || contact.mac)
+-        Accessible.onPressAction: root.peerClicked(contact.mac)
+-        Keys.onReturnPressed: root.peerClicked(contact.mac)
+-        Keys.onSpacePressed: root.peerClicked(contact.mac)
+-        Rectangle {
+-          anchors.fill: parent
+-          visible: peerButton.activeFocus
+-          color: "transparent"
+-          border.color: root.foreground
+-        }
+-        MouseArea {
+-          id: peerMouse
+-          hoverEnabled: true
+-          anchors.fill: parent
+-          cursorShape: Qt.PointingHandCursor
+-          onClicked: root.peerClicked(contact.mac)
+-        }
+-        PanelToolTip {
+-          visible: root.visible && peerButton.enabled && peerMouse.containsMouse
+-          text: "Send a file to " + (contact.peerName || contact.mac)
+-          fontFamily: root.fontFamily
+-        }
+-      }
+-    }
+-  }
+-
+-  // Quiet by design: a small outline in the bottom-right corner that stays
+-  // out of the scope's way, and only comes forward under the pointer.
+-  Item {
+-    id: muteButton
+-    width: Style.space(22); height: width
+-    anchors.bottom: parent.bottom; anchors.right: parent.right
+-    activeFocusOnTab: root.visible
+-    opacity: muteMouse.containsMouse || activeFocus ? 0.85 : 0.3
+-    Behavior on opacity { NumberAnimation { duration: 150 } }
+-    Accessible.role: Accessible.Button
+-    Accessible.name: root.muted ? "Unmute radar sound" : "Mute radar sound"
+-    Accessible.onPressAction: root.muteToggled()
+-    Keys.onReturnPressed: root.muteToggled()
+-    Keys.onSpacePressed: root.muteToggled()
+-    Rectangle {
+-      anchors.fill: parent
+-      radius: width / 2
+-      color: "transparent"
+-      border.color: root.foreground
+-      border.width: muteButton.activeFocus ? 1 : 0
+-    }
+-    Shape {
+-      anchors.centerIn: parent
+-      width: 24; height: 24
+-      scale: muteButton.width / 24 * 0.7
+-      ShapePath {
+-        strokeColor: root.foreground; strokeWidth: 1.6; fillColor: "transparent"
+-        joinStyle: ShapePath.RoundJoin
+-        startX: 3; startY: 9.5
+-        PathLine { x: 7; y: 9.5 }
+-        PathLine { x: 12; y: 5.5 }
+-        PathLine { x: 12; y: 18.5 }
+-        PathLine { x: 7; y: 14.5 }
+-        PathLine { x: 3; y: 14.5 }
+-        PathLine { x: 3; y: 9.5 }
+-      }
+-      // One sound wave while on; a small cross where it was once muted.
+-      ShapePath {
+-        strokeColor: root.muted ? "transparent" : root.foreground
+-        strokeWidth: 1.6; fillColor: "transparent"; capStyle: ShapePath.RoundCap
+-        PathSvg { path: "M15.5 8.5a5 5 0 0 1 0 7" }
+-      }
+-      ShapePath {
+-        strokeColor: root.muted ? root.foreground : "transparent"
+-        strokeWidth: 1.6; fillColor: "transparent"; capStyle: ShapePath.RoundCap
+-        PathSvg { path: "M15.5 9.5l5 5M20.5 9.5l-5 5" }
+-      }
+-    }
+-    MouseArea {
+-      id: muteMouse
+-      anchors.fill: parent
+-      hoverEnabled: true
+-      cursorShape: Qt.PointingHandCursor
+-      onClicked: root.muteToggled()
+-    }
+-  }
+-}
+diff --git a/bin/omdrop b/bin/omdrop
+index d80c7e8..a2c7269 100755
+--- a/bin/omdrop
++++ b/bin/omdrop
+@@ -1107,10 +1107,18 @@ backend_contract_say() {
+ }
+ 
+ # Whether the sender keeps every peer on one line of its own: omdrop-awdl at
+-# NAMES_CLEAN_VERSION or newer, by its probe. No probe, a hung one, another
+-# backend, or an older version all count as no.
++# NAMES_CLEAN_VERSION or newer, by its probe, or, when its omdrop-discoverable
++# answers no probe, by the installed package that owns the sender in use. A
++# hung probe, another backend, another sender, or an older version all count
++# as no.
+ sender_names_clean() {
+-  radio_probe || return 1
++  if ! radio_probe; then
++    [[ "$SENDER" == /usr/lib/omdrop/send-to-peer ]] || return 1
++    local installed
++    installed=$(pacman -Q "$DRIVER_PKG" 2>/dev/null) || return 1
++    version_ge "${installed##* }" "$NAMES_CLEAN_VERSION"
++    return
++  fi
+   [[ "$(probe_field backend)" == awdl ]] || return 1
+   local version
+   version=$(probe_field version)
+diff --git a/manifest.json b/manifest.json
+index 64ec118..aae9e4c 100644
+--- a/manifest.json
++++ b/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "schemaVersion": 1,
+   "id": "netmojo.omdrop",
+-  "name": "Omdrop - AirDrop for Omarchy",
++  "name": "AirDrop",
+   "version": "0.18.7",
+   "author": "Brent Kearney",
+   "license": "MIT",
+@@ -13,24 +13,10 @@
+     "barWidget": "Panel.qml"
+   },
+   "barWidget": {
+-    "displayName": "omdrop",
++    "displayName": "AirDrop",
+     "description": "Become visible to nearby Apple devices for a bounded window, receive what they send, and send them files from a radar of who is nearby.",
+     "category": "Network",
+     "allowMultiple": false,
+-    "defaultSection": "right",
+-    "defaults": {
+-      "windowMinutes": 10
+-    },
+-    "schema": [
+-      {
+-        "key": "windowMinutes",
+-        "type": "integer",
+-        "label": "Receive window (minutes)",
+-        "min": 1,
+-        "max": 120,
+-        "step": 1,
+-        "defaultValue": 10
+-      }
+-    ]
++    "defaultSection": "right"
+   }
+ }

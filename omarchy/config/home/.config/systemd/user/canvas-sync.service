@@ -1,0 +1,7 @@
+[Unit]
+Description=Sync Canvas assignments and send due-date reminders
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 %h/.config/omarchy/plugins/ryan-stoffel.clock/canvas-sync.py

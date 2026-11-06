@@ -14,7 +14,7 @@ J514s, SoC T6030), on Omarchy's Apple Silicon kernel `linux-aurora`.
 
 `config/home/` mirrors `~` (Hyprland, the Omarchy shell layout, Everforest
 theme overrides, and the custom plugins: Apple menu, menu, lock screen, Touch ID
-sudo card, full gaps). `config/system/` mirrors `/` (PAM, modprobe, the AWDL
+sudo card, full gaps, and a clock whose calendar shows Canvas due dates). `config/system/` mirrors `/` (PAM, modprobe, the AWDL
 resume drop-in, `sudo-touchid`). `config/plugin-patches/` holds local edits to
 two third-party plugins; the first line of each names the upstream repo and
 commit it applies to.
@@ -39,10 +39,14 @@ Restore by hand, in this order, on a fresh install:
    /usr/local/bin/`. Do the PAM files only after Touch ID works
    (`fprintd-verify`); keep a root shell open while testing sudo.
 5. `omarchy/sync.sh restore`, then `omarchy restart shell`.
+6. Canvas: put the calendar feed URL (Canvas > Calendar > Calendar Feed) in
+   `~/.config/canvas-calendar/feed-url` with mode 600, then
+   `systemctl --user daemon-reload && systemctl --user enable --now canvas-sync.timer`.
 
 Not stored: the live wallpaper video (58 MB, `~/.config/omarchy/backgrounds/`),
 fingerprint templates, the Secure Enclave state, the sensor calibration blob,
-and `~/.config/omdrop/settings`.
+`~/.config/omdrop/settings`, and the Canvas feed URL (it grants read access
+to your Canvas calendar).
 
 ## Stability notes
 

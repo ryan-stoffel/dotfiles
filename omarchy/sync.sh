@@ -31,10 +31,13 @@ home_paths=(
   .config/omarchy/branding/about.txt
   .config/omarchy/branding/screensaver.txt
   .config/omarchy/plugins/ryan-stoffel-apple-menu
+  .config/omarchy/plugins/ryan-stoffel.clock
   .config/omarchy/plugins/ryan-stoffel.full-gaps
   .config/omarchy/plugins/ryan-stoffel.lock
   .config/omarchy/plugins/ryan-stoffel.menu
   .config/omarchy/plugins/ryan-stoffel.sudo-touchid
+  .config/systemd/user/canvas-sync.service
+  .config/systemd/user/canvas-sync.timer
 )
 
 # Absolute paths, captured for reference and manual restore.

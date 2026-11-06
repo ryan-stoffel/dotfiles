@@ -1,0 +1,5 @@
+{
+  "message.command": "Allow “%1” to run as administrator.",
+  "message.plain": "Allow administrator access.",
+  "hint": "Touch ID or enter your password to allow this."
+}

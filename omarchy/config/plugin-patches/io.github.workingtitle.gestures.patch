@@ -1,0 +1,239 @@
+base: https://github.com/workingtitle/omarchy-swipe-control.git 1d7c532c53d5a05e5b347182c5f4cebca66fee96
+diff --git a/Expose.qml b/Expose.qml
+index ef7b13c..cbc7f92 100644
+--- a/Expose.qml
++++ b/Expose.qml
+@@ -1,5 +1,7 @@
+ import QtQuick
++import QtQuick.Effects
+ import Quickshell
++import Quickshell.Io
+ import Quickshell.Hyprland
+ import Quickshell.Wayland
+ import qs.Commons
+@@ -26,11 +28,30 @@ Scope {
+   readonly property color foreground: Color.foreground
+   readonly property color accent: Color.accent
+   readonly property int animationMs: 220
++  // Local: Hyprland's decoration:rounding, read when Mission Control opens.
++  property real windowRounding: 0
++  Process {
++    id: roundingQuery
++    command: ["hyprctl", "getoption", "decoration:rounding", "-j"]
++    stdout: StdioCollector {
++      onStreamFinished: {
++        try { root.windowRounding = Math.max(0, Number(JSON.parse(text).int) || 0) } catch (e) {}
++      }
++    }
++  }
++  // Local: the id a new space gets, after the last one on this monitor, as on macOS.
++  readonly property int nextWorkspaceId: {
++    var max = 0
++    var all = Hyprland.workspaces.values
++    for (var i = 0; i < all.length; i++) if (all[i].id > max) max = all[i].id
++    return max + 1
++  }
+ 
+   function show() {
+     if (open) return
+     Hyprland.refreshToplevels()
+     Hyprland.refreshWorkspaces()
++    roundingQuery.running = true
+     selected = -1
+     shown = false
+     open = true
+@@ -63,6 +84,12 @@ Scope {
+     hide()
+   }
+ 
++  // Local: adds a space after the last one and shows it, staying in Mission Control.
++  function addWorkspace() {
++    selected = -1
++    dispatch("hl.dsp.focus({ workspace = \"" + nextWorkspaceId + "\" })")
++  }
++
+   // Switches the workspace shown without leaving Mission Control. Stops at
+   // either end of the strip.
+   function stepWorkspace(delta) {
+@@ -215,8 +242,11 @@ Scope {
+       return Math.min(stripHeight, Math.floor(fitWidth * height / Math.max(1, width)))
+     }
+     readonly property real margin: Math.round(width * 0.04)
+-    readonly property rect gridArea: Qt.rect(margin, stripHeight + margin * 1.4,
+-      width - margin * 2, height - stripHeight - margin * 2.4)
++    // Local: keeps the strip clear of the MacBook notch on the built-in panel.
++    // shortcut: 37 is the 14" M3 Pro notch (74 rows at scale 2), read apple,notch-height for other Macs.
++    readonly property real topInset: root.screen && String(root.screen.name).indexOf("eDP") === 0 ? 37 : 0
++    readonly property rect gridArea: Qt.rect(margin, topInset + stripHeight + margin * 1.4,
++      width - margin * 2, height - topInset - stripHeight - margin * 2.4)
+     readonly property var layout: root.computeLayout(root.windows, gridArea.width, gridArea.height, Math.round(margin * 0.6))
+ 
+     property var dragWindow: null
+@@ -225,9 +255,10 @@ Scope {
+     function workspaceAt(x, y) {
+       for (var i = 0; i < strip.children.length; i++) {
+         var thumb = strip.children[i]
+-        if (!thumb.workspace) continue
++        if (!thumb.workspace && !thumb.addTile) continue
+         var p = thumb.mapFromItem(content, x, y)
+-        if (p.x >= 0 && p.y >= 0 && p.x <= thumb.width && p.y <= thumb.height) return thumb.workspace
++        if (p.x >= 0 && p.y >= 0 && p.x <= thumb.width && p.y <= thumb.height)
++          return thumb.addTile ? { id: root.nextWorkspaceId } : thumb.workspace
+       }
+       return null
+     }
+@@ -276,7 +307,7 @@ Scope {
+       Row {
+         id: strip
+         anchors.horizontalCenter: parent.horizontalCenter
+-        y: root.shown ? overlay.margin * 0.5 : -overlay.stripHeight
++        y: root.shown ? overlay.topInset + overlay.margin * 0.5 : -overlay.stripHeight
+         spacing: overlay.stripSpacing
+         Behavior on y { NumberAnimation { duration: root.animationMs; easing.type: Easing.OutCubic } }
+ 
+@@ -295,14 +326,20 @@ Scope {
+             height: overlay.thumbHeight
+             width: Math.round(height * overlay.width / Math.max(1, overlay.height))
+ 
+-            Rectangle {
++            // Local: the previews are clipped to the card's rounded corners and
++            // the border is drawn on top, so nothing pokes past it.
++            Item {
++              id: thumbCard
+               anchors.fill: parent
+-              color: Color.background
+-              radius: Style.cornerRadius
+-              clip: true
+-              border.width: thumb.active || thumb.dropTarget || thumbMouse.containsMouse ? 2 : 1
+-              border.color: thumb.active || thumb.dropTarget ? root.accent
+-                : Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, thumbMouse.containsMouse ? 0.5 : 0.2)
++              layer.enabled: true
++              layer.effect: MultiEffect {
++                maskEnabled: true
++                maskSource: thumbMask
++                maskThresholdMin: 0.5
++                maskSpreadAtMin: 1.0
++              }
++
++              Rectangle { anchors.fill: parent; color: Color.background }
+ 
+               Repeater {
+                 model: root.open ? root.windowsOf(thumb.workspace) : []
+@@ -319,6 +356,23 @@ Scope {
+               }
+             }
+ 
++            Item {
++              id: thumbMask
++              anchors.fill: parent
++              layer.enabled: true
++              visible: false
++              Rectangle { anchors.fill: parent; radius: Style.cornerRadius; color: "black" }
++            }
++
++            Rectangle {
++              anchors.fill: parent
++              color: "transparent"
++              radius: Style.cornerRadius
++              border.width: thumb.active || thumb.dropTarget || thumbMouse.containsMouse ? 2 : 1
++              border.color: thumb.active || thumb.dropTarget ? root.accent
++                : Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, thumbMouse.containsMouse ? 0.5 : 0.2)
++            }
++
+             Text {
+               anchors.top: parent.bottom
+               anchors.topMargin: 4
+@@ -337,6 +391,44 @@ Scope {
+             }
+           }
+         }
++
++        // Local: "+" adds a space; dropping a window on it moves the window there.
++        Item {
++          id: addThumb
++          readonly property bool addTile: true
++          readonly property bool dropTarget: overlay.dragWindow !== null
++            && overlay.workspaceAt(overlay.dragPoint.x, overlay.dragPoint.y) !== null
++            && overlay.workspaceAt(overlay.dragPoint.x, overlay.dragPoint.y).id === root.nextWorkspaceId
++          readonly property bool hot: addMouse.containsMouse || dropTarget
++          height: overlay.thumbHeight
++          width: Math.round(height * 0.6)
++
++          Rectangle {
++            anchors.fill: parent
++            radius: Style.cornerRadius
++            color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, addThumb.hot ? 0.16 : 0.06)
++            border.width: addThumb.dropTarget ? 2 : 1
++            border.color: addThumb.dropTarget ? root.accent
++              : Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, addThumb.hot ? 0.5 : 0.2)
++            Behavior on color { ColorAnimation { duration: 120 } }
++          }
++
++          Text {
++            anchors.centerIn: parent
++            text: "+"
++            color: addThumb.dropTarget ? root.accent : root.foreground
++            opacity: addThumb.hot ? 1 : 0.7
++            font.family: Style.font.family
++            font.pixelSize: Math.round(addThumb.height * 0.4)
++          }
++
++          MouseArea {
++            id: addMouse
++            anchors.fill: parent
++            hoverEnabled: true
++            onClicked: root.addWorkspace()
++          }
++        }
+       }
+ 
+       // ---------------------------------------------------------- window grid
+@@ -352,6 +444,9 @@ Scope {
+           readonly property var slot: overlay.layout[index] || { x: real.x, y: real.y, w: real.w, h: real.h }
+           readonly property bool hot: tileMouse.containsMouse || root.selected === index
+           readonly property bool dragging: overlay.dragWindow === modelData
++          // Local: the window's own rounding at the tile's scale.
++          readonly property real radius: root.windowRounding * width / Math.max(1, real.w)
++          readonly property real borderWidth: 2
+ 
+           x: root.shown ? overlay.gridArea.x + slot.x : real.x
+           y: root.shown ? overlay.gridArea.y + slot.y : real.y
+@@ -370,16 +465,34 @@ Scope {
+             anchors.fill: parent
+             captureSource: tile.modelData.wayland
+             live: root.open
++            layer.enabled: tile.radius > 0
++            layer.effect: MultiEffect {
++              maskEnabled: true
++              maskSource: tileMask
++              maskThresholdMin: 0.5
++              maskSpreadAtMin: 1.0
++            }
+           }
+ 
++          Item {
++            id: tileMask
++            anchors.fill: parent
++            layer.enabled: true
++            visible: false
++            Rectangle { anchors.fill: parent; radius: tile.radius; color: "black" }
++          }
++
++          // Local: sits just outside the preview's edge with matching corners,
++          // so it traces the window instead of floating around it.
+           Rectangle {
+             anchors.fill: parent
+-            anchors.margins: -3
++            anchors.margins: -tile.borderWidth
+             color: "transparent"
+-            radius: Style.cornerRadius
+-            border.width: 3
++            radius: tile.radius + tile.borderWidth
++            border.width: tile.borderWidth
+             border.color: root.accent
+-            visible: tile.hot && root.shown
++            opacity: tile.hot && root.shown ? 1 : 0
++            Behavior on opacity { NumberAnimation { duration: 120 } }
+           }
+ 
+           Rectangle {

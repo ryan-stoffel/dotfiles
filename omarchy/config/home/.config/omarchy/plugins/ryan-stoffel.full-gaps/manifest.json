@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "ryan-stoffel.full-gaps",
+  "name": "Full gaps",
+  "version": "1.0.0",
+  "author": "ryan-stoffel",
+  "description": "Spaces shell panels from the bar by Hyprland's full gaps_out so they line up with window tops.",
+  "kinds": [
+    "service"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "service": "Service.qml"
+  }
+}

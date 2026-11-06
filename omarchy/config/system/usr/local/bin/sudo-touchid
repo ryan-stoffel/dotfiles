@@ -1,0 +1,71 @@
+#!/bin/bash
+# Drives the "Touch ID for sudo" card (omarchy shell plugin
+# ryan-stoffel.sudo-touchid) from sudo's PAM stack (pam_exec runs it with root's euid):
+#   show  before pam_fprintd waits on the sensor
+#   hide  after pam_fprintd, when it fell through to the password
+#   done  in the session stack, once sudo authenticated
+# Best effort: it always exits 0 so it can never affect authentication.
+action=${1:-}
+case $action in show | hide | done) ;; *) exit 0 ;; esac
+
+# The user who ran sudo, whose shell draws the card.
+user=${PAM_RUSER:-}
+[[ $user =~ ^[a-z_][a-z0-9_-]{0,31}$ ]] || exit 0
+IFS=: read -r _ _ uid gid _ home _ < <(getent passwd "$user") || exit 0
+[[ $uid =~ ^[0-9]+$ ]] && ((uid >= 1000)) || exit 0
+run=/run/user/$uid
+[[ -S $run/omarchy-shell.sock || -n $(ls "$run"/wayland-[0-9]* 2>/dev/null) ]] || exit 0
+
+# The reader is unreachable with the lid shut; pam_fprintd is skipped then.
+[[ $action == show ]] && /usr/bin/omarchy-hw-laptop-closed && exit 0
+
+# pam_exec keeps sudo's real uid (the user's); drop to it only when run as root.
+call() {
+  local as_user=()
+  ((EUID == 0 && UID != uid)) && as_user=(setpriv --reuid="$uid" --regid="$gid" --init-groups --)
+  timeout 2 "${as_user[@]}" \
+    env -i PATH=/usr/bin OMARCHY_PATH=/usr/share/omarchy HOME="$home" USER="$user" XDG_RUNTIME_DIR="$run" \
+    /usr/bin/omarchy-shell -q sudoTouchId "$@" >/dev/null 2>&1
+}
+
+# The command sudo is about to run, from its own argv, without sudo's options.
+sudo_command() {
+  local -a argv
+  mapfile -d '' -t argv </proc/"$PPID"/cmdline 2>/dev/null || return
+  local i=1
+  while ((i < ${#argv[@]})); do
+    case ${argv[i]} in
+      --) ((i++)); break ;;
+      -[CDghprRtTUu]) ((i += 2)) ;; # options that take a value
+      -*) ((i++)) ;;
+      *) break ;;
+    esac
+  done
+  printf '%s ' "${argv[@]:i}" | head -c 300
+}
+
+# One marker per sudo run, so a watcher from an earlier sudo can't hide a
+# later run's card. hide and done (same sudo, same $PPID) clear it.
+marker=$run/sudo-touchid.$PPID
+
+if [[ $action == show ]]; then
+  cmd=$(sudo_command)
+  : >"$marker"
+  call show "${cmd:- }" # the plugin's show() always takes one argument
+  # Ctrl+C while pam_fprintd waits kills sudo before hide runs: watch sudo for
+  # as long as pam_fprintd can wait, and hide the card if it dies first.
+  sudo_pid=$PPID
+  (
+    for _ in $(seq 70); do
+      [[ -e $marker ]] || exit 0
+      [[ -d /proc/$sudo_pid ]] || { rm -f "$marker"; call hide; exit 0; }
+      sleep 0.5
+    done
+    rm -f "$marker"
+  ) </dev/null >/dev/null 2>&1 &
+  disown
+else
+  rm -f "$marker"
+  call "$action"
+fi
+exit 0

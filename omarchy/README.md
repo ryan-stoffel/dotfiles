@@ -42,11 +42,14 @@ Restore by hand, in this order, on a fresh install:
 6. Canvas: put the calendar feed URL (Canvas > Calendar > Calendar Feed) in
    `~/.config/canvas-calendar/feed-url` with mode 600, then
    `systemctl --user daemon-reload && systemctl --user enable --now canvas-sync.timer`.
+7. AirPods: `omarchy plugin add https://github.com/thisisgm/omarchy-pods --enable`,
+   then build its daemon with the manual steps in that plugin's README, passing
+   `-j2` to `cmake --build` so the build doesn't overheat the Mac.
 
 Not stored: the live wallpaper video (58 MB, `~/.config/omarchy/backgrounds/`),
 fingerprint templates, the Secure Enclave state, the sensor calibration blob,
-`~/.config/omdrop/settings`, and the Canvas feed URL (it grants read access
-to your Canvas calendar).
+`~/.config/omdrop/settings`, the Canvas feed URL (it grants read access
+to your Canvas calendar), and the AirPods pairing keys in `~/.config/AirPodsTrayApp`.
 
 ## Stability notes
 
